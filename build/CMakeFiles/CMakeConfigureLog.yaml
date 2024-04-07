@@ -224,3 +224,44 @@ events:
       LTO support using: LLVM version 14.0.3, (clang-1403.0.22.14.1) (static support for 29, runtime is 29)
       TAPI support using: Apple TAPI version 14.0.3 (tapi-1403.0.5.1)
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/Cellar/cmake/3.29.0/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/opt/homebrew/Cellar/cmake/3.29.0/share/cmake/Modules/CheckCXXSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "/opt/homebrew/Cellar/cmake/3.29.0/share/cmake/Modules/FindThreads.cmake:99 (CHECK_CXX_SOURCE_COMPILES)"
+      - "/opt/homebrew/Cellar/cmake/3.29.0/share/cmake/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "/opt/homebrew/Cellar/cmake/3.29.0/share/cmake/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "/usr/local/lib/cmake/benchmark/benchmarkConfig.cmake:12 (find_dependency)"
+      - "CMakeLists.txt:13 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "/Users/yonah/Repos/cilk/build/CMakeFiles/CMakeScratch/TryCompile-zD8mdN"
+      binary: "/Users/yonah/Repos/cilk/build/CMakeFiles/CMakeScratch/TryCompile-zD8mdN"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: "/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/yonah/Repos/cilk/build/CMakeFiles/CMakeScratch/TryCompile-zD8mdN'
+        
+        Run Build Command(s): /opt/homebrew/Cellar/cmake/3.29.0/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_09ad4/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_09ad4.dir/build.make CMakeFiles/cmTC_09ad4.dir/build
+        Building CXX object CMakeFiles/cmTC_09ad4.dir/src.cxx.o
+        /Library/Developer/CommandLineTools/usr/bin/clang++ -DCMAKE_HAVE_LIBC_PTHREAD  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -MD -MT CMakeFiles/cmTC_09ad4.dir/src.cxx.o -MF CMakeFiles/cmTC_09ad4.dir/src.cxx.o.d -o CMakeFiles/cmTC_09ad4.dir/src.cxx.o -c /Users/yonah/Repos/cilk/build/CMakeFiles/CMakeScratch/TryCompile-zD8mdN/src.cxx
+        Linking CXX executable cmTC_09ad4
+        /opt/homebrew/Cellar/cmake/3.29.0/bin/cmake -E cmake_link_script CMakeFiles/cmTC_09ad4.dir/link.txt --verbose=1
+        /Library/Developer/CommandLineTools/usr/bin/clang++  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_09ad4.dir/src.cxx.o -o cmTC_09ad4
+        
+      exitCode: 0
+...

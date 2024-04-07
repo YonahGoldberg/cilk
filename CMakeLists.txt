@@ -10,4 +10,9 @@ project(MyProject VERSION 1.0
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(cilk src/benchmark.cpp src/simple_scheduler.hpp)
+find_package(benchmark REQUIRED)
+
+add_executable(cilk src/benchmark.cpp src/simple_scheduler.hpp
+    src/simple_cs_scheduler.hpp src/scheduler.hpp)
+
+target_link_libraries(cilk benchmark::benchmark)

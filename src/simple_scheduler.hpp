@@ -74,7 +74,8 @@ public:
   // finish
   T steal(std::future<T> fut) { return fut.get(); }
 
-  ~SimpleScheduler() {}
+  // Nothing to cleanup
+  void cleanup() {}
 };
 
 #endif

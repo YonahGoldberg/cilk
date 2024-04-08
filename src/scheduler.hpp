@@ -18,7 +18,8 @@ public:
   // While future is not valid, attempt to steal work
   virtual T steal(std::future<T> fut) = 0;
 
-  virtual ~Scheduler() {} // Virtual destructor
+  // Cleanup thread pool and join threads
+  virtual void cleanup() = 0;
 };
 
 #endif

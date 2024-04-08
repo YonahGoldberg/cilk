@@ -40,7 +40,6 @@ public:
     taskQueues.resize(n);
     std::vector<std::mutex> muts(n);
     locks.swap(muts);
-
     for (int i = 0; i < n; i++) {
       // emplace_back efficiently stores the thread without needing an extra
       // move
@@ -58,11 +57,9 @@ public:
     auto fut = task.get_future();
     {
       // Lock current thread's task queue before accessing
-      std::cout << "locking 1" << std::endl;
       std::unique_lock<std::mutex> lock(locks[tid]);
       taskQueues[tid].emplace(Task{std::move(task)});
     }
-    std::cout << "unlocking 1" << std::endl;
     return fut;
   }
 
@@ -71,7 +68,8 @@ public:
     int curTid = getTid();
 
     // While future is not valid, attempt to steal work
-    while (!fut.valid()) {
+    while (fut.wait_for(std::chrono::milliseconds(0)) !=
+           std::future_status::ready) {
       Task task;
       bool foundTask = false;
       {
@@ -94,19 +92,26 @@ public:
     }
 
     // Return result of future if there is one
-    if constexpr (!std::is_void<T>::value) {
+    if constexpr (std::is_void<T>::value) {
+      fut.get();
+    } else {
       return fut.get();
     }
   }
 
-  ~SimpleCSScheduler() {
+  void cleanup() {
     // Set finish to true to signal all threads to exit their main routine
     finish = true;
     for (auto &thread : threads) {
-      std::cout << "Waiting for join" << std::endl;
       thread.join();
-      std::cout << "Got join" << std::endl;
     }
+
+    // clear state from previous iteration
+    threads.clear();
+    threadIds.clear();
+    taskQueues.clear();
+    locks.clear();
+    finish = false;
   }
 
 private:
@@ -123,7 +128,6 @@ private:
       Task task;
       bool foundTask = false;
       {
-        std::cout << "Locking 2" << std::endl;
         std::unique_lock<std::mutex> lock(locks[curTid]);
         if (!taskQueues[curTid].empty()) {
           foundTask = true;
@@ -131,12 +135,10 @@ private:
           taskQueues[curTid].pop();
         }
       }
-      std::cout << "Unlocking 2" << std::endl;
 
       if (!foundTask) {
         // No task in current queue, try next queue
         curTid = (curTid + 1) % n;
-        std::cout << "no task" << std::endl;
         continue;
       }
 

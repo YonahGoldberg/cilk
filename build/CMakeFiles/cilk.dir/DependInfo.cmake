@@ -8,7 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/yonah/Repos/cilk/src/benchmark.cpp" "CMakeFiles/cilk.dir/src/benchmark.cpp.o" "gcc" "CMakeFiles/cilk.dir/src/benchmark.cpp.o.d"
+  "/Users/jellinge/Desktop/cilk/src/benchmark.cpp" "CMakeFiles/cilk.dir/src/benchmark.cpp.o" "gcc" "CMakeFiles/cilk.dir/src/benchmark.cpp.o.d"
+  "/Users/jellinge/Desktop/cilk/src/tests/fib.cpp" "CMakeFiles/cilk.dir/src/tests/fib.cpp.o" "gcc" "CMakeFiles/cilk.dir/src/tests/fib.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

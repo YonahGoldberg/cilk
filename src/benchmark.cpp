@@ -12,7 +12,7 @@
 #include "simple_scheduler.hpp"
 
 #include "tests/fib.hpp"
-// #include "tests/quicksort.hpp"
+#include "tests/quicksort.hpp"
 
 SimpleScheduler<int> simpleScheduler;
 SimpleCSScheduler<int> simpleCSScheduler;
@@ -28,25 +28,25 @@ Scheduler<int> *scheduler = &simpleScheduler;
 //   }
 // }
 
-int quicksort(int *begin, int *end) {
-  if (begin != end) {
-    end--;
-    int pivot = *end;
-    auto middle =
-        std::partition(begin, end, [pivot](int x) { return x < pivot; });
-    std::swap(*end, *middle);
+// int quicksort(int *begin, int *end) {
+//   if (begin != end) {
+//     end--;
+//     int pivot = *end;
+//     auto middle =
+//         std::partition(begin, end, [pivot](int x) { return x < pivot; });
+//     std::swap(*end, *middle);
 
-    auto x = scheduler->spawn(
-        [begin, middle]() { return quicksort(begin, middle); });
-    auto y = scheduler->spawn(
-        [begin, middle, end]() mutable { return quicksort(++middle, ++end); });
+//     auto x = scheduler->spawn(
+//         [begin, middle]() { return quicksort(begin, middle); });
+//     auto y = scheduler->spawn(
+//         [begin, middle, end]() mutable { return quicksort(++middle, ++end); });
 
-    scheduler->steal(std::move(x));
-    scheduler->steal(std::move(y));
-  }
+//     scheduler->steal(std::move(x));
+//     scheduler->steal(std::move(y));
+//   }
 
-  return 0;
-}
+//   return 0;
+// }
 
 static void initSimpleScheduler(const benchmark::State &state) {
   scheduler = &simpleScheduler;

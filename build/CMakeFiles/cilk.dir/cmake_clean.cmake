@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/cilk.dir/src/tests/nqueens.cpp.o.d"
   "CMakeFiles/cilk.dir/src/tests/quicksort.cpp.o"
   "CMakeFiles/cilk.dir/src/tests/quicksort.cpp.o.d"
+  "CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o"
+  "CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o.d"
   "cilk"
   "cilk.pdb"
 )

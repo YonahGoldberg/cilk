@@ -225,6 +225,30 @@ src/tests/quicksort.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/quicksort.cpp.s
 .PHONY : src/tests/quicksort.cpp.s
 
+src/tests/rectmul.o: src/tests/rectmul.cpp.o
+.PHONY : src/tests/rectmul.o
+
+# target to build an object file
+src/tests/rectmul.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o
+.PHONY : src/tests/rectmul.cpp.o
+
+src/tests/rectmul.i: src/tests/rectmul.cpp.i
+.PHONY : src/tests/rectmul.i
+
+# target to preprocess a source file
+src/tests/rectmul.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/rectmul.cpp.i
+.PHONY : src/tests/rectmul.cpp.i
+
+src/tests/rectmul.s: src/tests/rectmul.cpp.s
+.PHONY : src/tests/rectmul.s
+
+# target to generate assembly for a file
+src/tests/rectmul.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/rectmul.cpp.s
+.PHONY : src/tests/rectmul.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -246,6 +270,9 @@ help:
 	@echo "... src/tests/quicksort.o"
 	@echo "... src/tests/quicksort.i"
 	@echo "... src/tests/quicksort.s"
+	@echo "... src/tests/rectmul.o"
+	@echo "... src/tests/rectmul.i"
+	@echo "... src/tests/rectmul.s"
 .PHONY : help
 
 

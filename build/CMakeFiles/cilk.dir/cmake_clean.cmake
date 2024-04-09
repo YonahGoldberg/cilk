@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/cilk.dir/src/benchmark.cpp.o.d"
   "CMakeFiles/cilk.dir/src/tests/fib.cpp.o"
   "CMakeFiles/cilk.dir/src/tests/fib.cpp.o.d"
+  "CMakeFiles/cilk.dir/src/tests/nqueens.cpp.o"
+  "CMakeFiles/cilk.dir/src/tests/nqueens.cpp.o.d"
   "CMakeFiles/cilk.dir/src/tests/quicksort.cpp.o"
   "CMakeFiles/cilk.dir/src/tests/quicksort.cpp.o.d"
   "cilk"

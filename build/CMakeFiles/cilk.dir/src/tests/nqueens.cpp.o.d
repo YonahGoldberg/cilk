@@ -1,6 +1,6 @@
-CMakeFiles/cilk.dir/src/tests/fib.cpp.o: \
-  /Users/jellinge/Desktop/cilk/src/tests/fib.cpp \
-  /Users/jellinge/Desktop/cilk/src/tests/fib.hpp \
+CMakeFiles/cilk.dir/src/tests/nqueens.cpp.o: \
+  /Users/jellinge/Desktop/cilk/src/tests/nqueens.cpp \
+  /Users/jellinge/Desktop/cilk/src/tests/nqueens.hpp \
   /Users/jellinge/Desktop/cilk/src/tests/scheduler_instance.hpp \
   /Users/jellinge/Desktop/cilk/src/tests/../simple_scheduler.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any \

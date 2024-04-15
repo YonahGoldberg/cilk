@@ -15,4 +15,6 @@ find_package(benchmark REQUIRED)
 add_executable(cilk src/benchmark.cpp src/simple_scheduler.hpp
     src/simple_cs_scheduler.hpp src/scheduler.hpp)
 
+add_executable(test src/cont_test.cpp src/simple_cont_scheduler.hpp)
+
 target_link_libraries(cilk benchmark::benchmark)

@@ -129,6 +129,19 @@ cilk/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/build
 .PHONY : cilk/fast
 
+#=============================================================================
+# Target rules for targets named test
+
+# Build rule for target.
+test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test
+.PHONY : test
+
+# fast build rule for target.
+test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
+.PHONY : test/fast
+
 src/benchmark.o: src/benchmark.cpp.o
 .PHONY : src/benchmark.o
 
@@ -153,6 +166,30 @@ src/benchmark.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/benchmark.cpp.s
 .PHONY : src/benchmark.cpp.s
 
+src/cont_test.o: src/cont_test.cpp.o
+.PHONY : src/cont_test.o
+
+# target to build an object file
+src/cont_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/cont_test.cpp.o
+.PHONY : src/cont_test.cpp.o
+
+src/cont_test.i: src/cont_test.cpp.i
+.PHONY : src/cont_test.i
+
+# target to preprocess a source file
+src/cont_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/cont_test.cpp.i
+.PHONY : src/cont_test.cpp.i
+
+src/cont_test.s: src/cont_test.cpp.s
+.PHONY : src/cont_test.s
+
+# target to generate assembly for a file
+src/cont_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/cont_test.cpp.s
+.PHONY : src/cont_test.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -162,9 +199,13 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... cilk"
+	@echo "... test"
 	@echo "... src/benchmark.o"
 	@echo "... src/benchmark.i"
 	@echo "... src/benchmark.s"
+	@echo "... src/cont_test.o"
+	@echo "... src/cont_test.i"
+	@echo "... src/cont_test.s"
 .PHONY : help
 
 

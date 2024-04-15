@@ -9,6 +9,7 @@
 #include <thread>
 #include <vector>
 #include <csetjmp>
+#include <stack>
 
 const size_t STACK_SIZE = 16 * 1024;
 
@@ -62,33 +63,23 @@ struct Task {
 template <typename T>
 class SimpleContScheduler {
 private:
-  std::queue<Task<void>> tasks;
-  Task<T> curTask;
-  jmp_buf buf;
-
   void schedule() {
-    if (tasks.size() == 0) return;
-    std::cout << "here1\n";
-    curTask = std::move(tasks.front());
-    std::cout << "here2\n";
+    if (tasks.size() == 0) {
+      return;
+    }
+    curTask = std::move(tasks.top());
     tasks.pop();
-    std::cout << "here3\n";
 
     if (curTask.type == TaskType::CREATED) {
-      std::cout << "here4\n";
       void* top = curTask.stackTop;
-      std::cout << top << std::endl;
-
       asm volatile(
         "mov sp, %[rs] \n"
         :
         : [rs] "r" (top)
         : "memory"
       );
-      std::cout << "here4.5\n";
 
       curTask.func();
-      std::cout << "here5\n";
       longjmp(buf, 1);
     } else {
       longjmp(*curTask.buf, 1);
@@ -96,24 +87,35 @@ private:
   }
 
 public:
+  static std::stack<Task<T>> tasks;
+  static Task<T> curTask;
+  static jmp_buf buf;
+
   SimpleContScheduler() {}
 
   T run(std::function<T()> func) {
     tasks.emplace(std::move(Task(func)));
-    if (setjmp(buf) == 0) {
-      std::cout << "scheduling" << std::endl;
-      schedule();
-    }
+    setjmp(buf);
+    schedule();
   }
 
-  std::future<T> spawn(std::function<T()> func) {
+  void spawn(std::function<T()> func) {
     if (setjmp(*curTask.buf) == 0) {
       curTask.type = TaskType::CONTINUATION;
-      tasks.emplace(std::move(curTask));
       tasks.emplace(std::move(Task(func)));
+      tasks.emplace(std::move(curTask));
       longjmp(buf, 1);
     }
   }
 };
+
+template<typename T>
+std::stack<Task<T>> SimpleContScheduler<T>::tasks;
+
+template<typename T>
+Task<T> SimpleContScheduler<T>::curTask;
+
+template<typename T>
+jmp_buf SimpleContScheduler<T>::buf;
 
 #endif

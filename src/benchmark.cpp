@@ -9,8 +9,8 @@
 
 #include "scheduler_instance.hpp"
 #include "tests/fib.hpp"
-#include "tests/quicksort.hpp"
 #include "tests/nqueens.hpp"
+#include "tests/quicksort.hpp"
 #include "tests/rectmul.hpp"
 
 static void initSimpleScheduler(const benchmark::State &state) {
@@ -50,7 +50,7 @@ static void BM_Fib(benchmark::State &state) {
 }
 static void BM_NQueens(benchmark::State &state) {
   int n = state.range(0);
-  char* a = new char[n];
+  char *a = new char[n];
   for (auto _ : state) {
     nqueens(n, 0, a);
   }

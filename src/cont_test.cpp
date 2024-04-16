@@ -1,17 +1,16 @@
-#include <random>
 #include "simple_cont_scheduler.hpp"
+#include <random>
 
 SimpleContScheduler<void> scheduler;
 
 void test() {
   for (int i = 0; i < 10; i++) {
-    scheduler.spawn([i] {
-        std::cout << "hello from iteration " << i << std::endl;
-    });
+    scheduler.spawn(
+        [i] { std::cout << "hello from iteration " << i << std::endl; });
   }
 }
 
-void quicksort(int* begin, int* end) {
+void quicksort(int *begin, int *end) {
   if (begin != end) {
     end--;
     int pivot = *end;
@@ -25,7 +24,7 @@ void quicksort(int* begin, int* end) {
 }
 
 int main() {
-  scheduler.run([] { 
+  scheduler.run([] {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dist(1, 1000); // Adjust range as needed
@@ -36,8 +35,8 @@ int main() {
     }
 
     quicksort(arr.data(), arr.data() + arr.size());
-    
-    for (auto& elem : arr) {
+
+    for (auto &elem : arr) {
       std::cout << elem << std::endl;
     }
   });

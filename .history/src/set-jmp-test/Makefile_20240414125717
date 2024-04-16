@@ -1,0 +1,7 @@
+all: scheduler
+
+scheduler: main.c scheduler.c
+    gcc -o scheduler main.c scheduler.c -I.
+
+clean:
+    rm -f scheduler

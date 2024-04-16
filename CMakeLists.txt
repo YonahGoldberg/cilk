@@ -14,6 +14,7 @@ find_package(benchmark REQUIRED)
 
 add_executable(cilk src/benchmark.cpp src/simple_scheduler.hpp
     src/simple_cs_scheduler.hpp src/scheduler.hpp src/tests/fib.hpp src/tests/fib.cpp src/tests/quicksort.hpp
-    src/tests/quicksort.cpp src/tests/quicksort.hpp src/tests/fib.cpp src/tests/fib.hpp src/tests/scheduler_instance.hpp)
+    src/tests/quicksort.cpp src/tests/quicksort.hpp src/tests/fib.cpp src/tests/fib.hpp src/tests/scheduler_instance.hpp
+    src/tests/rectmul.cpp src/tests/rectmul.hpp src/tests/nqueens.cpp src/tests/nqueens.hpp)
 
 target_link_libraries(cilk benchmark::benchmark)

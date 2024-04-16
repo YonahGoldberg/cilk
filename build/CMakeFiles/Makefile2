@@ -45,19 +45,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/homebrew/Cellar/cmake/3.29.0/bin/cmake
+CMAKE_COMMAND = /opt/homebrew/Cellar/cmake/3.29.1/bin/cmake
 
 # The command to remove a file.
-RM = /opt/homebrew/Cellar/cmake/3.29.0/bin/cmake -E rm -f
+RM = /opt/homebrew/Cellar/cmake/3.29.1/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/yonah/Repos/cilk
+CMAKE_SOURCE_DIR = /Users/jellinge/Desktop/cilk
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/yonah/Repos/cilk/build
+CMAKE_BINARY_DIR = /Users/jellinge/Desktop/cilk/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -81,14 +81,14 @@ clean: CMakeFiles/cilk.dir/clean
 CMakeFiles/cilk.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/yonah/Repos/cilk/build/CMakeFiles --progress-num=1,2 "Built target cilk"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/jellinge/Desktop/cilk/build/CMakeFiles --progress-num=1,2 "Built target cilk"
 .PHONY : CMakeFiles/cilk.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/cilk.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/yonah/Repos/cilk/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/jellinge/Desktop/cilk/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/cilk.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/yonah/Repos/cilk/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/jellinge/Desktop/cilk/build/CMakeFiles 0
 .PHONY : CMakeFiles/cilk.dir/rule
 
 # Convenience name for target.

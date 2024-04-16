@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cilk.dir/src/benchmark.cpp.o"
   "CMakeFiles/cilk.dir/src/benchmark.cpp.o.d"
+  "CMakeFiles/cilk.dir/src/scheduler_instance.cpp.o"
+  "CMakeFiles/cilk.dir/src/scheduler_instance.cpp.o.d"
   "CMakeFiles/cilk.dir/src/tests/fib.cpp.o"
   "CMakeFiles/cilk.dir/src/tests/fib.cpp.o.d"
   "CMakeFiles/cilk.dir/src/tests/nqueens.cpp.o"

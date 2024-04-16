@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
-#include "scheduler_instance.hpp" 
+#include "../scheduler_instance.hpp" 
 #include "rectmul.hpp"
 
 unsigned long long todval (struct timeval *tp) {

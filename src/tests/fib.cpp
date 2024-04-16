@@ -1,5 +1,5 @@
 #include "fib.hpp"
-#include "scheduler_instance.hpp"
+#include "../scheduler_instance.hpp"
 
 int fib(int n) {
   if (n < 2) {

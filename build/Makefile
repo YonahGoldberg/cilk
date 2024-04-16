@@ -153,6 +153,30 @@ src/benchmark.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/benchmark.cpp.s
 .PHONY : src/benchmark.cpp.s
 
+src/scheduler_instance.o: src/scheduler_instance.cpp.o
+.PHONY : src/scheduler_instance.o
+
+# target to build an object file
+src/scheduler_instance.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/scheduler_instance.cpp.o
+.PHONY : src/scheduler_instance.cpp.o
+
+src/scheduler_instance.i: src/scheduler_instance.cpp.i
+.PHONY : src/scheduler_instance.i
+
+# target to preprocess a source file
+src/scheduler_instance.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/scheduler_instance.cpp.i
+.PHONY : src/scheduler_instance.cpp.i
+
+src/scheduler_instance.s: src/scheduler_instance.cpp.s
+.PHONY : src/scheduler_instance.s
+
+# target to generate assembly for a file
+src/scheduler_instance.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/scheduler_instance.cpp.s
+.PHONY : src/scheduler_instance.cpp.s
+
 src/tests/fib.o: src/tests/fib.cpp.o
 .PHONY : src/tests/fib.o
 
@@ -261,6 +285,9 @@ help:
 	@echo "... src/benchmark.o"
 	@echo "... src/benchmark.i"
 	@echo "... src/benchmark.s"
+	@echo "... src/scheduler_instance.o"
+	@echo "... src/scheduler_instance.i"
+	@echo "... src/scheduler_instance.s"
 	@echo "... src/tests/fib.o"
 	@echo "... src/tests/fib.i"
 	@echo "... src/tests/fib.s"

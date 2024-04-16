@@ -1,8 +1,8 @@
 CMakeFiles/cilk.dir/src/tests/nqueens.cpp.o: \
   /Users/yonah/Repos/cilk/src/tests/nqueens.cpp \
   /Users/yonah/Repos/cilk/src/tests/nqueens.hpp \
-  /Users/yonah/Repos/cilk/src/tests/scheduler_instance.hpp \
-  /Users/yonah/Repos/cilk/src/tests/../simple_scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/tests/../scheduler_instance.hpp \
+  /Users/yonah/Repos/cilk/src/tests/../schedulers/simple_scheduler.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__assert \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__config \
@@ -687,8 +687,8 @@ CMakeFiles/cilk.dir/src/tests/nqueens.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__functional/pointer_to_unary_function.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__functional/unary_negate.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/thread \
-  /Users/yonah/Repos/cilk/src/tests/../scheduler.hpp \
-  /Users/yonah/Repos/cilk/src/tests/../simple_cs_scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/tests/../schedulers/scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/tests/../schedulers/simple_cs_scheduler.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/iostream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ios \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__locale \

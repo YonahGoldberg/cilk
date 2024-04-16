@@ -1,5 +1,5 @@
 #include "nqueens.hpp"
-#include "scheduler_instance.hpp"
+#include "../scheduler_instance.hpp"
 
 int ok (int n, char *a) {
   int i, j;

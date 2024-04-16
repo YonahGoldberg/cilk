@@ -7,18 +7,11 @@
 #include <iterator>
 #include <random>
 
-#include "scheduler.hpp"
-#include "simple_cs_scheduler.hpp"
-#include "simple_scheduler.hpp"
-
+#include "scheduler_instance.hpp"
 #include "tests/fib.hpp"
 #include "tests/quicksort.hpp"
 #include "tests/nqueens.hpp"
 #include "tests/rectmul.hpp"
-
-SimpleScheduler<int> simpleScheduler;
-SimpleCSScheduler<int> simpleCSScheduler;
-Scheduler<int> *scheduler = &simpleScheduler;
 
 static void initSimpleScheduler(const benchmark::State &state) {
   scheduler = &simpleScheduler;
@@ -82,49 +75,45 @@ BENCHMARK(BM_Quicksort)
     ->Setup(initSimpleCSScheduler)
     ->Teardown(cleanupSimpleCSScheduler)
     ->Name("SimpleCSScheduler Quicksort");
-// BENCHMARK(BM_Fib)
+BENCHMARK(BM_Fib)
+    ->Unit(benchmark::kMillisecond)
+    ->Range(10, 15)
+    ->Setup(initSimpleScheduler)
+    ->Teardown(cleanupSimpleScheduler)
+    ->Name("SimpleScheduler Fib");
+BENCHMARK(BM_Fib)
+    ->Unit(benchmark::kMillisecond)
+    ->Range(10, 15)
+    ->Setup(initSimpleCSScheduler)
+    ->Teardown(cleanupSimpleCSScheduler)
+    ->Name("SimpleCSScheduler Fib");
+BENCHMARK(BM_NQueens)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(5)
+    ->Arg(8)
+    ->Arg(10)
+    ->Setup(initSimpleScheduler)
+    ->Teardown(cleanupSimpleScheduler)
+    ->Name("SimpleScheduler N-Queens");
+BENCHMARK(BM_NQueens)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(5)
+    ->Arg(8)
+    ->Arg(10)
+    ->Setup(initSimpleCSScheduler)
+    ->Teardown(cleanupSimpleCSScheduler)
+    ->Name("SimpleCSScheduler N-Queens");
+// BENCHMARK(BM_Rectmul)
 //     ->Unit(benchmark::kMillisecond)
-//     ->Range(10, 15)
+//     ->Arg(64)
 //     ->Setup(initSimpleScheduler)
 //     ->Teardown(cleanupSimpleScheduler)
-//     ->Name("SimpleScheduler Fib");
-// BENCHMARK(BM_Fib)
+//     ->Name("SimpleScheduler Rectmul");
+// BENCHMARK(BM_Rectmul)
 //     ->Unit(benchmark::kMillisecond)
-//     ->Range(10, 15)
+//     ->Arg(64)
 //     ->Setup(initSimpleCSScheduler)
 //     ->Teardown(cleanupSimpleCSScheduler)
-//     ->Name("SimpleCSScheduler Fib");
-BENCHMARK(BM_NQueens)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(5)
-    ->Arg(8)
-    ->Arg(10)
-    ->Setup(initSimpleScheduler)
-    ->Teardown(cleanupSimpleScheduler)
-    ->Name("SimpleScheduler N-Queens");
-BENCHMARK(BM_NQueens)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(5)
-    ->Arg(8)
-    ->Arg(10)
-    ->Setup(initSimpleCSScheduler)
-    ->Teardown(cleanupSimpleCSScheduler)
-    ->Name("SimpleCSScheduler N-Queens");
-BENCHMARK(BM_Rectmul)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(256)
-    ->Arg(512)
-    ->Arg(2048)
-    ->Setup(initSimpleScheduler)
-    ->Teardown(cleanupSimpleScheduler)
-    ->Name("SimpleScheduler N-Queens");
-BENCHMARK(BM_Rectmul)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(256)
-    ->Arg(512)
-    ->Arg(2048)
-    ->Setup(initSimpleCSScheduler)
-    ->Teardown(cleanupSimpleCSScheduler)
-    ->Name("SimpleCSScheduler N-Queens");
+//     ->Name("SimpleCSScheduler Rectmul");
 
 BENCHMARK_MAIN();

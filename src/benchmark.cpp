@@ -10,9 +10,11 @@
 #include "scheduler.hpp"
 #include "simple_cs_scheduler.hpp"
 #include "simple_scheduler.hpp"
+#include "simple_cs_lf_scheduler.hpp"
 
 SimpleScheduler<int> simpleScheduler;
 SimpleCSScheduler<int> simpleCSScheduler;
+SimpleCSLFScheduler<int> simpleCSLFScheduler;
 Scheduler<int> *scheduler = &simpleScheduler;
 
 int fib(int n) {
@@ -62,6 +64,15 @@ static void cleanupSimpleCSScheduler(const benchmark::State &state) {
   scheduler->cleanup();
 }
 
+static void initSimpleCSLFScheduler(const benchmark::State &state) {
+  scheduler = &simpleCSLFScheduler;
+  scheduler->init(8);
+}
+static void cleanupSimpleCSLFScheduler(const benchmark::State &state) {
+  scheduler = &simpleCSLFScheduler;
+  scheduler->cleanup();
+}
+
 static void BM_Quicksort(benchmark::State &state) {
   std::random_device rd;
   std::mt19937 gen(rd());
@@ -81,29 +92,35 @@ static void BM_Fib(benchmark::State &state) {
   }
 }
 
-BENCHMARK(BM_Quicksort)
-    ->Unit(benchmark::kMillisecond)
-    ->Range(2 << 5, 2 << 10)
-    ->Setup(initSimpleScheduler)
-    ->Teardown(cleanupSimpleScheduler)
-    ->Name("SimpleScheduler Quicksort");
-BENCHMARK(BM_Quicksort)
-    ->Unit(benchmark::kMillisecond)
-    ->Range(2 << 5, 2 << 10)
-    ->Setup(initSimpleCSScheduler)
-    ->Teardown(cleanupSimpleCSScheduler)
-    ->Name("SimpleCSScheduler Quicksort");
+// BENCHMARK(BM_Quicksort)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Range(2 << 5, 2 << 10)
+//     ->Setup(initSimpleScheduler)
+//     ->Teardown(cleanupSimpleScheduler)
+//     ->Name("SimpleScheduler Quicksort");
+// BENCHMARK(BM_Quicksort)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Range(2 << 5, 2 << 10)
+//     ->Setup(initSimpleCSScheduler)
+//     ->Teardown(cleanupSimpleCSScheduler)
+//     ->Name("SimpleCSScheduler Quicksort");
+// BENCHMARK(BM_Fib)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Range(10, 15)
+//     ->Setup(initSimpleScheduler)
+//     ->Teardown(cleanupSimpleScheduler)
+//     ->Name("SimpleScheduler Fib");
+// BENCHMARK(BM_Fib)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Range(10, 15)
+//     ->Setup(initSimpleCSScheduler)
+//     ->Teardown(cleanupSimpleCSScheduler)
+//     ->Name("SimpleCSScheduler Fib");
 BENCHMARK(BM_Fib)
     ->Unit(benchmark::kMillisecond)
     ->Range(10, 15)
-    ->Setup(initSimpleScheduler)
-    ->Teardown(cleanupSimpleScheduler)
-    ->Name("SimpleScheduler Fib");
-BENCHMARK(BM_Fib)
-    ->Unit(benchmark::kMillisecond)
-    ->Range(10, 15)
-    ->Setup(initSimpleCSScheduler)
-    ->Teardown(cleanupSimpleCSScheduler)
-    ->Name("SimpleCSScheduler Fib");
+    ->Setup(initSimpleCSLFScheduler)
+    ->Teardown(cleanupSimpleCSLFScheduler)
+    ->Name("SimpleCSLFScheduler Fib");
 
 BENCHMARK_MAIN();

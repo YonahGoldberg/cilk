@@ -75,7 +75,10 @@
         "__tree": "cpp",
         "map": "cpp",
         "set": "cpp",
-        "csetjmp": "cpp"
+        "csetjmp": "cpp",
+        "stack": "cpp",
+        "shared_mutex": "cpp",
+        "cassert": "cpp"
     },
     "clang-format.executable": "/Users/yonah/Repos/cilk/.clang-format",
     "C_Cpp.errorSquiggles": "disabled"

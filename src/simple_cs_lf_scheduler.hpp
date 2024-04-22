@@ -5,7 +5,7 @@
 #include <future>
 #include <iostream>
 #include <stdatomic.h>
-#include "lock-free-queue/JobQueue.hpp"
+#include "lock-free-queue/TaskQueue.hpp"
 #include "lock-free-queue/Task.hpp"
 #include <queue>
 #include <thread>
@@ -15,16 +15,13 @@
 template <typename T> class SimpleCSLFScheduler : public Scheduler<T> {
 private:
   // A task that a thread can run.
-  // struct Task {
-  //   std::packaged_task<T()> func;
-  // };
   // All the threads in the thread pool
   std::vector<std::thread> threads;
   // Map from std::thread::id to an integer thread id that is easier to work
   // with.
   std::unordered_map<std::thread::id, int> threadIds;
   // Each thread has an associated queue of tasks for it to run.
-  std::vector<JobQueue<T> *> taskQueues; // task queue for each worker
+  std::vector<TaskQueue<T> *> taskQueues; // task queue for each worker
   // Each task queue has an associated mutex for accessing.
   // std::vector<int8_t> locks;
   int n; // The number of threads in thread pool
@@ -42,7 +39,7 @@ public:
     // Add the rest of the workers
     for (size_t i = 0; i < n; i++)
     {
-      JobQueue<T> *queue = new JobQueue<T>(100);
+      TaskQueue<T> *queue = new TaskQueue<T>();
       taskQueues.push_back(queue);
       threads.emplace_back(&SimpleCSLFScheduler::workerThread, this, i);
       threadIds[threads[i].get_id()] = i;
@@ -68,7 +65,7 @@ public:
     return fut;
   }
 
-  JobQueue<T>* GetRandomJobQueue()
+  TaskQueue<T>* GetRandomTaskQueue()
   {
     // printf("GET RANDOM QUEUE\n");
     static std::random_device rd;
@@ -76,18 +73,18 @@ public:
     static std::uniform_int_distribution<> distribution(1, n);
     size_t index = static_cast<size_t> ( std::round( distribution( gen ) ) );
     // printf("%d\n", index);
-    JobQueue<T>* queue = taskQueues[index - 1];
+    TaskQueue<T>* queue = taskQueues[index - 1];
     // printf("GET RANDOM QUEUE FINISHED\n");
     return queue;
   }
 
   Task<T>* getTask(int curTid) {
     // printf("GET TASK \n");
-    JobQueue<T>* queue = taskQueues[curTid];
+    TaskQueue<T>* queue = taskQueues[curTid];
     Task<T>* task = queue->Pop();
     // printf("GET TASK POPPED\n");
     if (task == nullptr){
-      JobQueue<T> *randomQueue = GetRandomJobQueue();
+      TaskQueue<T> *randomQueue = GetRandomTaskQueue();
       if (randomQueue == nullptr)
       {
         std::this_thread::yield();

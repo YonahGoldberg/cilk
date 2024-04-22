@@ -66,7 +66,7 @@ static void cleanupSimpleCSScheduler(const benchmark::State &state) {
 
 static void initSimpleCSLFScheduler(const benchmark::State &state) {
   scheduler = &simpleCSLFScheduler;
-  scheduler->init(8);
+  scheduler->init(2);
 }
 static void cleanupSimpleCSLFScheduler(const benchmark::State &state) {
   scheduler = &simpleCSLFScheduler;

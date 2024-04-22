@@ -7,14 +7,13 @@
 
 
 template <typename T>
-class JobQueue {
+class TaskQueue {
 public:
-    JobQueue(size_t maxJobs) 
-        : maxJobs ( maxJobs )
+    TaskQueue()
     {
         bottomIndex = 0;
         topIndex = 0;
-        queue.resize( maxJobs );
+        queue.resize(10000);
     }
 
     void Push(Task<T> *job) {
@@ -24,32 +23,28 @@ public:
     }
 
     Task<T>* Pop() {
-        int bottom = bottomIndex.load( std::memory_order_seq_cst );
-        bottom = std::max ( 0, bottom - 1 );
-        bottomIndex.store( bottom, std::memory_order_seq_cst );
-        int top = topIndex.load( std::memory_order_seq_cst);
-        if ( top <= bottom )
+        int bottom = bottomIndex.load(std::memory_order_seq_cst);
+        bottom = std::max (0, bottom - 1);
+        bottomIndex.store(bottom, std::memory_order_seq_cst);
+        int top = topIndex.load(std::memory_order_seq_cst);
+        if (top <= bottom)
         {
             Task<T> *job = queue[ bottom ];
-            // There are several jobs in the queue, we don't need to worry about Steal()
             if ( top != bottom )
             {
                 return job;
             }
-
-            // This is the last item in the queue, we need to check if a Steal() has increased top
             int stolenTop = top + 1;
-            if( topIndex.compare_exchange_strong( stolenTop, top + 1, std::memory_order_seq_cst ) )
+            if( topIndex.compare_exchange_strong(stolenTop, top + 1, std::memory_order_seq_cst))
             {
-                // An Steal() call has stolen our job (https://www.youtube.com/watch?v=DEiWU1MbBfk)
-                bottomIndex.store( stolenTop, std::memory_order_release );
+                bottomIndex.store(stolenTop, std::memory_order_release);
                 return nullptr;
             }
             return job;
         }
         else
         {
-            bottomIndex.store( top, std::memory_order_seq_cst );
+            bottomIndex.store(top, std::memory_order_seq_cst);
             return nullptr;
         }
     }

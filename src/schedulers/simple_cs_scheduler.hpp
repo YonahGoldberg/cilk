@@ -34,6 +34,27 @@ private:
 public:
   SimpleCSScheduler() {}
 
+  T run(std::function<T()> func, int n) {
+    this->n = n;
+    taskQueues.resize(n);
+    std::vector<std::mutex> muts(n);
+    locks.swap(muts);
+
+    for (int i = 1; i < n; i++) {
+      // emplace_back efficiently stores the thread without needing an extra
+      // move
+      threads.emplace_back(&SimpleCSScheduler::workerThread, this, i);
+      threadIds[threads[i].get_id()] = i;
+    }
+    threads[std::this_thread::get_id()] = 0;
+    workerThread();
+
+    // join threads when finished
+    for (auto& t : threads) {
+      t.join();
+    }
+  }
+
   // Initialize the child stealing scheduler with a thread pool size of n
   void init(int n) {
     this->n = n;

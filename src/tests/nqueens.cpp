@@ -43,7 +43,7 @@ int nqueens(int n, int j, char *a) {
     // Collect results from all futures
     // printf("return1\n");
     for (auto &fut : futures) {
-        solNum += scheduler->steal(std::move(fut));
+        solNum += scheduler->sync(std::move(fut));
     }
     // printf("return2\n");
     return solNum;

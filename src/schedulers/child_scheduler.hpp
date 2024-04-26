@@ -1,17 +1,29 @@
-#ifndef SIMPLE_CS_SCHEDULER_HPP
-#define SIMPLE_CS_SCHEDULER_HPP
+/**
+ * @file child_scheduler.hpp
+ * @author Yonah Goldberg (ygoldber@andrew.cmu.edu)
+ * @author Jack Ellinger (jellinge@andrew.cmu.edu)
+ * 
+ * @brief A child stealing scheduler. Each thread has its own deque that is protected
+ * via a fine-grained lock. Spawned tasks are pushed to the front of a thread's deque. If
+ * a thread has no work, it steals from the back of another thread's deque. Threads only steal
+ * from their own queue while synchronizing (waiting on dependencies).
+ * 
+ */
+
+#ifndef CHILD_SCHEDULER_HPP
+#define CHILD_SCHEDULER_HPP
 
 #include <functional>
 #include <future>
 #include <iostream>
 #include <mutex>
-#include <queue>
+#include <deque>
 #include <thread>
 #include <vector>
 
 #include "scheduler.hpp"
 
-template <typename T> class SimpleCSScheduler : public Scheduler<T> {
+template <typename T> class ChildScheduler : public Scheduler<T> {
 private:
   // A task that a thread can run.
   struct Task {
@@ -23,49 +35,56 @@ private:
   // with.
   std::unordered_map<std::thread::id, int> threadIds;
   // Each thread has an associated queue of tasks for it to run.
-  std::vector<std::queue<Task>> taskQueues;
+  std::vector<std::deque<Task>> taskQueues;
   // Each task queue has an associated mutex for accessing.
   std::vector<std::mutex> locks;
   // The number of threads in thread pool
   int n;
-  // Set to true when we want all threads to exit
-  bool finish = false;
+  // Number of tasks across all queues
+  std::atomic<int> taskCount = 0;
+  // Number of threads currently doing work
+  std::atomic<int> workCount = 0;
 
 public:
-  SimpleCSScheduler() {}
+  ChildScheduler() {}
 
+  // Create a thread pool of size n, put func into main thread's task queue,
+  // and call workerThread. This function returns when all work is done and
+  // all threads are joined.
   T run(std::function<T()> func, int n) {
     this->n = n;
     taskQueues.resize(n);
     std::vector<std::mutex> muts(n);
     locks.swap(muts);
+    taskCount = 1;
 
     for (int i = 1; i < n; i++) {
       // emplace_back efficiently stores the thread without needing an extra
       // move
-      threads.emplace_back(&SimpleCSScheduler::workerThread, this, i);
+      threads.emplace_back(&ChildScheduler::workerThread, this, i);
       threadIds[threads[i].get_id()] = i;
     }
-    threads[std::this_thread::get_id()] = 0;
-    workerThread();
+
+    threadIds[std::this_thread::get_id()] = 0;
+    std::packaged_task<T()> task(func);
+    auto fut = task.get_future();
+    taskQueues[0].emplace_front(Task{std::move(task)});
+
+    workerThread(0);
 
     // join threads when finished
     for (auto& t : threads) {
       t.join();
     }
-  }
 
-  // Initialize the child stealing scheduler with a thread pool size of n
-  void init(int n) {
-    this->n = n;
-    taskQueues.resize(n);
-    std::vector<std::mutex> muts(n);
-    locks.swap(muts);
-    for (int i = 0; i < n; i++) {
-      // emplace_back efficiently stores the thread without needing an extra
-      // move
-      threads.emplace_back(&SimpleCSScheduler::workerThread, this, i);
-      threadIds[threads[i].get_id()] = i;
+    threads.clear();
+    threadIds.clear();
+
+    // Return result of func if there is one 
+    if constexpr (std::is_void<T>::value) {
+      fut.get();
+    } else {
+      return fut.get();
     }
   }
 
@@ -79,14 +98,16 @@ public:
     {
       // Lock current thread's task queue before accessing
       std::unique_lock<std::mutex> lock(locks[tid]);
-      taskQueues[tid].emplace(Task{std::move(task)});
+      taskQueues[tid].emplace_front(Task{std::move(task)});
     }
-    return fut;
+
+    taskCount.fetch_add(1, std::memory_order_relaxed);
+    return std::move(fut);
   }
 
   // Attempt to steal work while waiting on fut to finish
-  T steal(std::future<T> fut) {
-    int curTid = getTid();
+  T sync(std::future<T> fut) {
+    int tid = getTid();
 
     // While future is not valid, attempt to steal work
     while (fut.wait_for(std::chrono::milliseconds(0)) !=
@@ -94,17 +115,17 @@ public:
       Task task;
       bool foundTask = false;
       {
-        std::unique_lock<std::mutex> lock(locks[curTid]);
-        if (!taskQueues[curTid].empty()) {
+        std::unique_lock<std::mutex> lock(locks[tid]);
+        if (!taskQueues[tid].empty()) {
           foundTask = true;
-          task = std::move(taskQueues[curTid].front());
-          taskQueues[curTid].pop();
+          task = std::move(taskQueues[tid].front());
+          taskQueues[tid].pop_front();
         }
       }
 
-      if (!foundTask) {
-        // No task in current queue, try next queue
-        curTid = (curTid + 1) % n;
+      if (foundTask) {
+        taskCount.fetch_sub(1, std::memory_order_relaxed);
+      } else {
         continue;
       }
 
@@ -120,51 +141,52 @@ public:
     }
   }
 
-  void cleanup() {
-    // Set finish to true to signal all threads to exit their main routine
-    finish = true;
-    for (auto &thread : threads) {
-      thread.join();
-    }
-
-    // clear state from previous iteration
-    threads.clear();
-    threadIds.clear();
-    taskQueues.clear();
-    locks.clear();
-    finish = false;
-  }
-
 private:
   // Get the callling threads integer thread ID
   int getTid() { return threadIds[std::this_thread::get_id()]; }
 
   void workerThread(int tid) {
-    int curTid = getTid();
+    int curTid = tid;
 
     // Loop continuously over all the work queues, starting with this thread's
     // queue If we find any work to do, pop the work off and complete it! This
     // naive way of finding work might cause a lot of contention!
-    while (!finish) {
+    while (true) {
       Task task;
       bool foundTask = false;
       {
         std::unique_lock<std::mutex> lock(locks[curTid]);
         if (!taskQueues[curTid].empty()) {
           foundTask = true;
-          task = std::move(taskQueues[curTid].front());
-          taskQueues[curTid].pop();
+          if (curTid == tid) {
+            task = std::move(taskQueues[curTid].front());
+            taskQueues[curTid].pop_front();
+          } else {
+            task = std::move(taskQueues[curTid].back());
+            taskQueues[curTid].pop_back();
+          }
         }
       }
 
-      if (!foundTask) {
-        // No task in current queue, try next queue
+      if (foundTask) {
+        workCount.fetch_add(1, std::memory_order_relaxed);
+        taskCount.fetch_sub(1, std::memory_order_relaxed);
+      } else {
+        // No more tasks across all queues AND no workers currently running a task
+        // If a workers is running a task then it might add more tasks to its queue,
+        // so we keep this thread runing
+        if (taskCount == 0 && workCount == 0) {
+          break;
+        }
+
+        // Keep this thread running and check next queue
         curTid = (curTid + 1) % n;
         continue;
       }
 
       // There is a task to run. Execute it!
       task.func();
+      workCount.fetch_sub(1, std::memory_order_relaxed);
     }
   }
 };

@@ -301,12 +301,12 @@ static long long add_matrix(block *T, long ot, block *R, long orr, long x, long 
   if (x > y) {
     auto future1 = scheduler->spawn([=]() -> long long { return add_matrix(T, ot, R, orr, x / 2, y); });
     long long _tmp2 = add_matrix(T + (x / 2) * ot, ot, R + (x / 2) * orr, orr, (x + 1) / 2, y);
-    long long _tmp1 = scheduler->steal(std::move(future1));
+    long long _tmp1 = scheduler->sync(std::move(future1));
     flops = _tmp1 + _tmp2;
   } else {
     auto future1 = scheduler->spawn([=]() -> long long { return add_matrix(T, ot, R, orr, x, y / 2); });
     long long _tmp2 = add_matrix(T + (y / 2), ot, R + (y / 2), orr, x, (y + 1) / 2);
-    long long _tmp1 = scheduler->steal(std::move(future1));
+    long long _tmp1 = scheduler->sync(std::move(future1));
     flops = _tmp1 + _tmp2;
   }
 
@@ -336,14 +336,14 @@ int init_matrix(block *R, long x, long y, long o, DTYPE v) {
       return 0;
     });
     init_matrix(R + (x / 2) * o, (x + 1) / 2, y, o, v);
-    scheduler->steal(std::move(future1));
+    scheduler->sync(std::move(future1));
   } else {
     auto future1 = scheduler->spawn([=]() -> int {
       init_matrix(R, x, y / 2, o, v); 
       return 0;
     });
     init_matrix(R + (y / 2), x, (y + 1) / 2, o, v);
-    scheduler->steal(std::move(future1));
+    scheduler->sync(std::move(future1));
   }
 
   return 0;
@@ -368,7 +368,7 @@ static long long multiply_matrix(block *A, long oa, block *B, long ob, long x,
   if ((x >= y) && (x >= z)) {
     auto future1 = scheduler->spawn([=]() -> long long { return multiply_matrix(A, oa, B, ob, x/2, y, z, R, orr, add); });
     long long _tmp2 = multiply_matrix(A + (x/2) * oa, oa, B, ob, (x+1)/2, y, z, R + (x/2) * orr, orr, add);
-    long long _tmp1 = scheduler->steal(std::move(future1));
+    long long _tmp1 = scheduler->sync(std::move(future1));
     flops = _tmp1 + _tmp2;
   } else if ((y > x) && (y > z)) {
     long long _tmp1 = multiply_matrix(A + (y/2) * oa, oa, B + (y/2) * ob, ob, x, (y+1)/2, z, R, orr, add);
@@ -377,7 +377,7 @@ static long long multiply_matrix(block *A, long oa, block *B, long ob, long x,
   } else {
     auto future1 = scheduler->spawn([=]() -> long long { return multiply_matrix(A, oa, B, ob, x, y, z/2, R, orr, add); });
     long long _tmp2 = multiply_matrix(A, oa, B + (z/2) * ob, ob, x, y, (z+1)/2, R + (z/2) * orr, orr, add);
-    long long _tmp1 = scheduler->steal(std::move(future1));
+    long long _tmp1 = scheduler->sync(std::move(future1));
     flops = _tmp1 + _tmp2;
   }
 
@@ -396,8 +396,8 @@ int rectmul(long x, long y, long z) {
   auto initA = scheduler->spawn([=]() -> int { return init_matrix(A, x, y, y, 1.0); });
   auto initB = scheduler->spawn([=]() -> int { return init_matrix(B, y, z, z, 1.0); });
   init_matrix(R, x, z, z, 0.0);
-  scheduler->steal(std::move(initA)); // Wait for task to complete
-  scheduler->steal(std::move(initB)); // Wait for task to complete
+  scheduler->sync(std::move(initA)); // Wait for task to complete
+  scheduler->sync(std::move(initB)); // Wait for task to complete
 
   flops = multiply_matrix(A,y,B,z,x,y,z,R,z,0);
 

@@ -2,7 +2,7 @@ CMakeFiles/cilk.dir/src/tests/quicksort.cpp.o: \
   /Users/yonah/Repos/cilk/src/tests/quicksort.cpp \
   /Users/yonah/Repos/cilk/src/tests/quicksort.hpp \
   /Users/yonah/Repos/cilk/src/tests/../scheduler_instance.hpp \
-  /Users/yonah/Repos/cilk/src/tests/../schedulers/simple_cs_scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/tests/../schedulers/child_scheduler.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/functional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/search.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/comp.h \
@@ -736,8 +736,8 @@ CMakeFiles/cilk.dir/src/tests/quicksort.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/sys/_types/_fsfilcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/_types/_nl_item.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__bsd_locale_defaults.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/deque \
   /Users/yonah/Repos/cilk/src/tests/../schedulers/scheduler.hpp \
   /Users/yonah/Repos/cilk/src/tests/../schedulers/simple_scheduler.hpp \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any \
+  /Users/yonah/Repos/cilk/src/tests/../schedulers/no_spawn_scheduler.hpp

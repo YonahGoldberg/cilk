@@ -1,6 +1,16 @@
+/**
+ * @file benchmark.cppp
+ * @author Yonah Goldberg (ygoldber@andrew.cmu.edu)
+ * @author Jack Ellinger (jellinge@andrew.cmu.edu)
+ * 
+ * @brief this is the main file executed to benchmark all of our schedulers. We use
+ * Google's benchmarking library. Information can be found here:
+ * https://github.com/google/benchmark/blob/main/docs/user_guide.md 
+ * 
+ */
+
 #include <algorithm>
 #include <benchmark/benchmark.h>
-#include <cassert>
 #include <chrono>
 #include <functional>
 #include <iostream>
@@ -13,6 +23,10 @@
 #include "tests/quicksort.hpp"
 #include "tests/rectmul.hpp"
 
+// Number of threads to spawn when running a test program
+const int NUM_THREADS = 8;
+
+// Utility function for quicksort to ensure an array is sorted
 bool isSorted(const std::vector<int>& vec) {
   // Check if the vector has less than 2 elements, as a vector with 0 or 1 element is always sorted
   if (vec.size() < 2) {
@@ -29,29 +43,29 @@ bool isSorted(const std::vector<int>& vec) {
   return true; // If no out-of-order elements are found, the vector is sorted
 }
 
-void assert_true(bool cond) {
-  if (!cond) {
-    std::cout << "Assertion Failed" << std::endl;
-  }
+// Custom assert function. We want to fail if any of our programs we test
+// are not correct.
+void assertTrue(bool condition, const std::string& message) {
+    if (!condition) {
+        std::cerr << "Assertion failed: " << message << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
 }
 
+// Initialization functions that run at the beginning of each test.
+// We set the global scheduler used in all tests to a specific scheduler
+// we want to test.
 static void initSimpleScheduler(const benchmark::State &state) {
   scheduler = &simpleScheduler;
-  scheduler->init(8);
 }
-static void cleanupSimpleScheduler(const benchmark::State &state) {
-  scheduler = &simpleScheduler;
-  scheduler->cleanup();
+static void initChildScheduler(const benchmark::State &state) {
+  scheduler = &childScheduler;
 }
-static void initSimpleCSScheduler(const benchmark::State &state) {
-  scheduler = &simpleCSScheduler;
-  scheduler->init(8);
-}
-static void cleanupSimpleCSScheduler(const benchmark::State &state) {
-  scheduler = &simpleCSScheduler;
-  scheduler->cleanup();
+static void initNoSpawnScheduler(const benchmark::State &state) {
+  scheduler = &noSpawnScheduler;
 }
 
+// Benchmark quicksort. Generate a random vector of integers and sort it!
 static void BM_Quicksort(benchmark::State &state) {
   std::random_device rd;
   std::mt19937 gen(rd());
@@ -61,16 +75,30 @@ static void BM_Quicksort(benchmark::State &state) {
   for (auto &elem : arr) {
     elem = dist(gen); // Fill the array with random integers
   }
+  std::vector<int> copy(arr);
+
   for (auto _ : state) {
-    quicksort(arr.data(), arr.data() + arr.size());
-    assert_true(isSorted(arr));
+    scheduler->run([&arr] { return quicksort(arr.data(), arr.data() + arr.size()); }, NUM_THREADS);
+    state.PauseTiming();
+    assertTrue(isSorted(arr), "Quicksort");
+    arr = copy;
+    state.ResumeTiming();
   }
+  
 }
+
+// Benchmark fibonacci. We test the inefficient O(2^n) recursive
+// algorithm to find the nth fibonacci number.
 static void BM_Fib(benchmark::State &state) {
   for (auto _ : state) {
-    fib(state.range(0));
+    int x = state.range(0);
+    int res = scheduler->run([x] { return fib(x); }, NUM_THREADS);
+    state.PauseTiming();
+    assertTrue(res == fibSeq(x), "Fib");
+    state.ResumeTiming();
   }
 }
+
 static void BM_NQueens(benchmark::State &state) {
   int n = state.range(0);
   char *a = new char[n];
@@ -79,6 +107,7 @@ static void BM_NQueens(benchmark::State &state) {
   }
   delete[] a;
 }
+
 static void BM_Rectmul(benchmark::State &state) {
   int x = state.range(0);
   for (auto _ : state) {
@@ -86,57 +115,70 @@ static void BM_Rectmul(benchmark::State &state) {
   }
 }
 
-// BENCHMARK(BM_Quicksort)
-//     ->Unit(benchmark::kMillisecond)
-//     ->Range(2 << 5, 2 << 10)
-//     ->Setup(initSimpleScheduler)
-//     ->Teardown(cleanupSimpleScheduler)
-//     ->Name("SimpleScheduler Quicksort");
+// Configuration to benchmark quicksort on all schedulers
 BENCHMARK(BM_Quicksort)
     ->Unit(benchmark::kMillisecond)
     ->Arg(1000000)
-    ->Setup(initSimpleCSScheduler)
-    ->Teardown(cleanupSimpleCSScheduler)
-    ->Name("SimpleCSScheduler Quicksort");
-// BENCHMARK(BM_Fib)
-//     ->Unit(benchmark::kMillisecond)
-//     ->Range(10, 15)
-//     ->Setup(initSimpleScheduler)
-//     ->Teardown(cleanupSimpleScheduler)
-//     ->Name("SimpleScheduler Fib");
-// BENCHMARK(BM_Fib)
-//     ->Unit(benchmark::kMillisecond)
-//     ->Range(10, 15)
-//     ->Setup(initSimpleCSScheduler)
-//     ->Teardown(cleanupSimpleCSScheduler)
-//     ->Name("SimpleCSScheduler Fib");
+    ->Setup(initNoSpawnScheduler)
+    ->Name("NoSpawnScheduler Quicksort");
+BENCHMARK(BM_Quicksort)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(1000000)
+    ->Setup(initSimpleScheduler)
+    ->Name("SimpleScheduler Quicksort");
+BENCHMARK(BM_Quicksort)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(1000000)
+    ->Setup(initChildScheduler)
+    ->Name("ChildScheduler Quicksort");
+
+// Configuration to benchmark fib on all schedulers
+BENCHMARK(BM_Fib)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(30)
+    ->Setup(initNoSpawnScheduler)
+    ->Name("NoSpawnScheduler Fib");
+BENCHMARK(BM_Fib)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(30)
+    ->Setup(initSimpleScheduler)
+    ->Name("SimpleScheduler Fib");
+BENCHMARK(BM_Fib)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(30)
+    ->Setup(initChildScheduler)
+    ->Name("ChildScheduler Fib");
+
 // BENCHMARK(BM_NQueens)
 //     ->Unit(benchmark::kMillisecond)
-//     ->Arg(5)
-//     ->Arg(8)
+//     ->Arg(10)
+//     ->Setup(initNoSpawnScheduler)
+//     ->Name("NoSpawnScheduler N-Queens");
+// BENCHMARK(BM_NQueens)
+//     ->Unit(benchmark::kMillisecond)
 //     ->Arg(10)
 //     ->Setup(initSimpleScheduler)
-//     ->Teardown(cleanupSimpleScheduler)
 //     ->Name("SimpleScheduler N-Queens");
 // BENCHMARK(BM_NQueens)
 //     ->Unit(benchmark::kMillisecond)
-//     ->Arg(5)
-//     ->Arg(8)
 //     ->Arg(10)
-//     ->Setup(initSimpleCSScheduler)
-//     ->Teardown(cleanupSimpleCSScheduler)
-//     ->Name("SimpleCSScheduler N-Queens");
+//     ->Setup(initChildScheduler)
+//     ->Name("ChildScheduler N-Queens");
+
+// BENCHMARK(BM_Rectmul)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(64)
+//     ->Setup(initNoSpawnScheduler)
+//     ->Name("NoSpawnScheduler Rectmul");
 // BENCHMARK(BM_Rectmul)
 //     ->Unit(benchmark::kMillisecond)
 //     ->Arg(64)
 //     ->Setup(initSimpleScheduler)
-//     ->Teardown(cleanupSimpleScheduler)
 //     ->Name("SimpleScheduler Rectmul");
 // BENCHMARK(BM_Rectmul)
 //     ->Unit(benchmark::kMillisecond)
 //     ->Arg(64)
-//     ->Setup(initSimpleCSScheduler)
-//     ->Teardown(cleanupSimpleCSScheduler)
-//     ->Name("SimpleCSScheduler Rectmul");
+//     ->Setup(initChildScheduler)
+//     ->Name("ChildScheduler Rectmul");
 
 BENCHMARK_MAIN();

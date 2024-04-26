@@ -635,7 +635,6 @@ CMakeFiles/cilk.dir/src/benchmark.cpp.o: /Users/yonah/Repos/cilk/src/benchmark.c
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/numeric \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/optional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ostream \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/random \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ratio \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/set \
@@ -790,8 +789,9 @@ CMakeFiles/cilk.dir/src/benchmark.cpp.o: /Users/yonah/Repos/cilk/src/benchmark.c
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stdint.h \
   /Users/yonah/Repos/cilk/src/scheduler_instance.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/child_scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/no_spawn_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/scheduler.hpp \
-  /Users/yonah/Repos/cilk/src/schedulers/simple_cs_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/simple_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/tests/fib.hpp \
   /Users/yonah/Repos/cilk/src/tests/nqueens.hpp \
@@ -1385,7 +1385,6 @@ CMakeFiles/cilk.dir/src/scheduler_instance.cpp.o: /Users/yonah/Repos/cilk/src/sc
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/new \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/optional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ostream \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ratio \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stddef.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stdexcept \
@@ -1537,8 +1536,9 @@ CMakeFiles/cilk.dir/src/scheduler_instance.cpp.o: /Users/yonah/Repos/cilk/src/sc
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stdarg.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stdint.h \
+  /Users/yonah/Repos/cilk/src/schedulers/child_scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/no_spawn_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/scheduler.hpp \
-  /Users/yonah/Repos/cilk/src/schedulers/simple_cs_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/simple_scheduler.hpp
 
 CMakeFiles/cilk.dir/src/tests/fib.cpp.o: /Users/yonah/Repos/cilk/src/tests/fib.cpp \
@@ -2126,7 +2126,6 @@ CMakeFiles/cilk.dir/src/tests/fib.cpp.o: /Users/yonah/Repos/cilk/src/tests/fib.c
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/new \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/optional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ostream \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ratio \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stddef.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stdexcept \
@@ -2279,8 +2278,9 @@ CMakeFiles/cilk.dir/src/tests/fib.cpp.o: /Users/yonah/Repos/cilk/src/tests/fib.c
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stdint.h \
   /Users/yonah/Repos/cilk/src/scheduler_instance.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/child_scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/no_spawn_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/scheduler.hpp \
-  /Users/yonah/Repos/cilk/src/schedulers/simple_cs_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/simple_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/tests/fib.hpp
 
@@ -2869,7 +2869,6 @@ CMakeFiles/cilk.dir/src/tests/nqueens.cpp.o: /Users/yonah/Repos/cilk/src/tests/n
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/new \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/optional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ostream \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ratio \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stddef.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stdexcept \
@@ -3022,8 +3021,9 @@ CMakeFiles/cilk.dir/src/tests/nqueens.cpp.o: /Users/yonah/Repos/cilk/src/tests/n
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stdint.h \
   /Users/yonah/Repos/cilk/src/scheduler_instance.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/child_scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/no_spawn_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/scheduler.hpp \
-  /Users/yonah/Repos/cilk/src/schedulers/simple_cs_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/simple_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/tests/nqueens.hpp
 
@@ -3612,7 +3612,6 @@ CMakeFiles/cilk.dir/src/tests/quicksort.cpp.o: /Users/yonah/Repos/cilk/src/tests
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/new \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/optional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ostream \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ratio \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stddef.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stdexcept \
@@ -3765,8 +3764,9 @@ CMakeFiles/cilk.dir/src/tests/quicksort.cpp.o: /Users/yonah/Repos/cilk/src/tests
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stdint.h \
   /Users/yonah/Repos/cilk/src/scheduler_instance.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/child_scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/no_spawn_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/scheduler.hpp \
-  /Users/yonah/Repos/cilk/src/schedulers/simple_cs_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/simple_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/tests/quicksort.hpp
 
@@ -4355,7 +4355,6 @@ CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o: /Users/yonah/Repos/cilk/src/tests/r
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/new \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/optional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ostream \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ratio \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stddef.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stdexcept \
@@ -4511,8 +4510,9 @@ CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o: /Users/yonah/Repos/cilk/src/tests/r
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stdint.h \
   /Users/yonah/Repos/cilk/src/scheduler_instance.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/child_scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/schedulers/no_spawn_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/scheduler.hpp \
-  /Users/yonah/Repos/cilk/src/schedulers/simple_cs_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/schedulers/simple_scheduler.hpp \
   /Users/yonah/Repos/cilk/src/tests/rectmul.hpp
 
@@ -4528,6 +4528,10 @@ CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o: /Users/yonah/Repos/cilk/src/tests/r
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__concepts/swappable.h:
 
 /Users/yonah/Repos/cilk/src/schedulers/simple_scheduler.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/count.h:
+
+/Users/yonah/Repos/cilk/src/schedulers/child_scheduler.hpp:
 
 /Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include/stddef.h:
 
@@ -4699,10 +4703,6 @@ CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o: /Users/yonah/Repos/cilk/src/tests/r
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/stdint.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__type_traits/is_copy_assignable.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/sys/_pthread/_pthread_mutexattr_t.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/optional:
@@ -4794,8 +4794,6 @@ CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o: /Users/yonah/Repos/cilk/src/tests/r
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/cassert:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__variant/monostate.h:
-
-/Users/yonah/Repos/cilk/src/schedulers/simple_cs_scheduler.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__utility/to_underlying.h:
 
@@ -4959,6 +4957,8 @@ CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o: /Users/yonah/Repos/cilk/src/tests/r
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__type_traits/is_core_convertible.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__type_traits/is_copy_assignable.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__random/extreme_value_distribution.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__type_traits/is_convertible.h:
@@ -5088,6 +5088,8 @@ CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o: /Users/yonah/Repos/cilk/src/tests/r
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__type_traits/is_standard_layout.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__random/student_t_distribution.h:
+
+/Users/yonah/Repos/cilk/src/schedulers/no_spawn_scheduler.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/stdio.h:
 
@@ -5248,8 +5250,6 @@ CMakeFiles/cilk.dir/src/tests/rectmul.cpp.o: /Users/yonah/Repos/cilk/src/tests/r
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/ranges_copy.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__iterator/sortable.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/count.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__iterator/prev.h:
 

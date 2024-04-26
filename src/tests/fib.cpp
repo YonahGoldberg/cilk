@@ -1,12 +1,20 @@
 #include "fib.hpp"
 #include "../scheduler_instance.hpp"
 
-int fib(int n) {
+int fibSeq(int n) {
   if (n < 2) {
     return n;
   } else {
+    return fib(n - 1) + fib(n - 2);
+  }  
+}
+
+int fib(int n) {
+  if (n < 20) {
+    return fibSeq(n);
+  } else {
     auto x = scheduler->spawn([n] { return fib(n - 1); });
     int y = fib(n - 2);
-    return scheduler->steal(std::move(x)) + y;
+    return scheduler->sync(std::move(x)) + y;
   }
 }

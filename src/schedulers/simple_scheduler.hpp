@@ -1,5 +1,5 @@
-#ifndef SIMPLE_CILK_SCHEDULER_HPP
-#define SIMPLE_CILK_SCHEDULER_HPP
+#ifndef SIMPLE_SCHEDULER_HPP
+#define SIMPLE_SCHEDULER_HPP
 
 #include <any>
 #include <future>
@@ -21,7 +21,10 @@ private:
 public:
   SimpleScheduler(){};
 
-  void init(int n) { threadsAvail = n; }
+  T run(std::function<T()> func, int n) {
+    threadsAvail = n;
+    return func();
+  }
 
   // Spawn a function to run "in parallel". If threadsAvail > 0, we can actually
   // run it in parallel Otherwise, run the function sequentially.
@@ -72,10 +75,7 @@ public:
 
   // Can't steal any more work in this implementation, just wait for future to
   // finish
-  T steal(std::future<T> fut) { return fut.get(); }
-
-  // Nothing to cleanup
-  void cleanup() {}
+  T sync(std::future<T> fut) { return fut.get(); }
 };
 
 #endif

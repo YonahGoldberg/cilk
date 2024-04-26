@@ -1,5 +1,5 @@
-#ifndef SIMPLE_CONT_SCHEDULER_HPP
-#define SIMPLE_CONT_SCHEDULER_HPP
+#ifndef CONT_SCHEDULER_HPP
+#define CONT_SCHEDULER_HPP
 
 #include <csetjmp>
 #include <functional>

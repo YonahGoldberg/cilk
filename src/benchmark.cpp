@@ -64,6 +64,9 @@ static void initChildScheduler(const benchmark::State &state) {
 static void initNoSpawnScheduler(const benchmark::State &state) {
   scheduler = &noSpawnScheduler;
 }
+static void initContScheduler(const benchmark::State &state) {
+  scheduler = &contScheduler;
+}
 
 // Benchmark quicksort. Generate a random vector of integers and sort it!
 static void BM_Quicksort(benchmark::State &state) {
@@ -131,6 +134,12 @@ BENCHMARK(BM_Quicksort)
     ->Arg(1000000)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler Quicksort");
+BENCHMARK(BM_Quicksort)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(1000000)
+    ->Setup(initContScheduler)
+    ->Iterations(1)
+    ->Name("ContScheduler Quicksort");
 
 // Configuration to benchmark fib on all schedulers
 BENCHMARK(BM_Fib)

@@ -740,4 +740,8 @@ CMakeFiles/cilk.dir/src/tests/quicksort.cpp.o: \
   /Users/yonah/Repos/cilk/src/tests/../schedulers/scheduler.hpp \
   /Users/yonah/Repos/cilk/src/tests/../schedulers/simple_scheduler.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any \
-  /Users/yonah/Repos/cilk/src/tests/../schedulers/no_spawn_scheduler.hpp
+  /Users/yonah/Repos/cilk/src/tests/../schedulers/no_spawn_scheduler.hpp \
+  /Users/yonah/Repos/cilk/src/tests/../schedulers/cont_scheduler.hpp \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/csetjmp \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/setjmp.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/setjmp.h

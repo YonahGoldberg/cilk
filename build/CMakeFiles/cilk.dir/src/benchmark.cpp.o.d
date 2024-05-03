@@ -793,10 +793,10 @@ CMakeFiles/cilk.dir/src/benchmark.cpp.o: \
   /Users/jellinge/Desktop/cilk/src/schedulers/simple_scheduler.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any \
   /Users/jellinge/Desktop/cilk/src/schedulers/no_spawn_scheduler.hpp \
+  /Users/jellinge/Desktop/cilk/src/schedulers/child_scheduler_lf.hpp \
+  /Users/jellinge/Desktop/cilk/src/schedulers/lock-free-queue/TaskQueue.hpp \
+  /Users/jellinge/Desktop/cilk/src/schedulers/lock-free-queue/Task.hpp \
   /Users/jellinge/Desktop/cilk/src/tests/fib.hpp \
   /Users/jellinge/Desktop/cilk/src/tests/nqueens.hpp \
   /Users/jellinge/Desktop/cilk/src/tests/quicksort.hpp \
-  /Users/jellinge/Desktop/cilk/src/tests/rectmul.hpp \
-  /Users/jellinge/Desktop/cilk/src/schedulers/child_scheduler_lf.hpp \
-  /Users/jellinge/Desktop/cilk/src/schedulers/lock-free-queue/TaskQueue.hpp \
-  /Users/jellinge/Desktop/cilk/src/schedulers/lock-free-queue/Task.hpp
+  /Users/jellinge/Desktop/cilk/src/tests/rectmul.hpp

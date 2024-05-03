@@ -55,7 +55,7 @@ public:
     for (int i = 0; i < n; i++) {
       // emplace_back efficiently stores the thread without needing an extra
       // move
-      TaskQueue<T> queue = TaskQueue<T>();
+      TaskQueue<T> queue = new TaskQueue<T>();
       taskQueues.push_back(queue);
     }
 

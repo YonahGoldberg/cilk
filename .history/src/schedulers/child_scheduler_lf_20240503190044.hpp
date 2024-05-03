@@ -33,7 +33,7 @@ private:
   // with.
   std::unordered_map<std::thread::id, int> threadIds;
   // Each thread has an associated queue of tasks for it to run.
-  std::vector<TaskQueue<T>> taskQueues;
+  std::vector<TaskQueue<T> *> taskQueues;
   // The number of threads in thread pool
   int n;
   // Number of tasks across all queues
@@ -55,7 +55,7 @@ public:
     for (int i = 0; i < n; i++) {
       // emplace_back efficiently stores the thread without needing an extra
       // move
-      TaskQueue<T> queue = TaskQueue<T>();
+      TaskQueue<T> *queue = new TaskQueue<T>();
       taskQueues.push_back(queue);
     }
 
@@ -68,7 +68,7 @@ public:
     threadIds[std::this_thread::get_id()] = 0;
     std::packaged_task<T()> task(func);
     auto fut = task.get_future();
-    taskQueues[0].push(Task<T>{std::move(task)});
+    taskQueues[0]->push(new Task<T>{std::move(task)});
     workerThread(0);
 
     // join threads when finished
@@ -94,7 +94,7 @@ public:
     std::packaged_task<T()> task(func);
     int tid = getTid();
     auto fut = task.get_future();
-    taskQueues[tid].push(Task<T>{std::move(task)});
+    taskQueues[tid]->push(new Task<T>{std::move(task)});
 
     taskCount.fetch_add(1, std::memory_order_relaxed);
     return std::move(fut);
@@ -109,56 +109,33 @@ public:
     return index;
   }
 
-  std::optional<Task<T>> getTask(int curTid) {
-    TaskQueue<T>& queue = taskQueues[curTid];
-    std::optional<Task<T>> task = queue.pop();
+  Task<T>* getTask(int curTid) {
+    TaskQueue<T>* queue = taskQueues[curTid];
+    Task<T>* task;
+    task = queue->pop();
 
-    if (!task.has_value()) {
+    if (task == nullptr){
       size_t randomIndex = GetRandomTaskQueue();
-      if (randomIndex == static_cast<size_t>(curTid)){
+      if (randomIndex == curTid){
         std::this_thread::yield();
-        return std::nullopt;
+        return nullptr;
       }
 
-      TaskQueue<T>& randomQueue = taskQueues[randomIndex];
-      if (&queue == &randomQueue) {
+      TaskQueue<T> *randomQueue = taskQueues[randomIndex];
+      if ( queue == randomQueue )
+      {
         std::this_thread::yield();
-        return std::nullopt;
+        return nullptr;
       }
-      task = randomQueue.steal();
-      if (!task.has_value()) {
+      task = randomQueue->steal();
+      if (task == nullptr)
+      {
         std::this_thread::yield();
-        return std::nullopt;
+        return nullptr;
       }
     }
     return task;
   }
-  // std::optional<Task<T>> getTask(int curTid) {
-  //   TaskQueue<T> queue = taskQueues[curTid];
-  //   std::optional<Task<T>> task = queue.pop();
-  
-  //   if (!task.has_value()){
-  //     size_t randomIndex = GetRandomTaskQueue();
-  //     if (randomIndex == curTid){
-  //       std::this_thread::yield();
-  //       return std::nullopt;
-  //     }
-
-  //     TaskQueue<T> randomQueue = taskQueues[randomIndex];
-  //     if ( queue == randomQueue )
-  //     {
-  //       std::this_thread::yield();
-  //       return std::nullopt;
-  //     }
-  //     task = randomQueue.steal();
-  //     if (task == nullptr)
-  //     {
-  //       std::this_thread::yield();
-  //       return std::nullopt;
-  //     }
-  //   }
-  //   return task;
-  // }
 
   // Attempt to steal work while waiting on fut to finish
   T sync(std::future<T> fut) {
@@ -167,11 +144,10 @@ public:
     // While future is not valid, attempt to steal work
     while (fut.wait_for(std::chrono::milliseconds(0)) !=
            std::future_status::ready) {
+      Task<T>* task;
       bool foundTask = false;
-      Task<T> task;
-      std::optional<Task<T>> taskOpt = getTask(tid);
-      if (taskOpt.has_value()) {
-          task = std::move(taskOpt.value());
+      task = getTask(tid);
+      if (task != nullptr) {
           foundTask = true;
       }
       if (foundTask) {
@@ -181,7 +157,8 @@ public:
       }
 
       // There is a task to run. Execute it!
-      task.func();
+      task->func();
+      delete task;
     }
 
     // Return result of future if there is one
@@ -197,15 +174,16 @@ private:
   int getTid() { return threadIds[std::this_thread::get_id()]; }
 
   void workerThread(int tid) {
+    int curTid = tid;
+
     // Loop continuously over all the work queues, starting with this thread's
     // queue If we find any work to do, pop the work off and complete it! This
     // naive way of finding work might cause a lot of contention!
     while (true) {
-      Task<T> task;
+      Task<T>* task;
       bool foundTask = false;
-      std::optional<Task<T>> taskOpt = getTask(tid);
-      if (taskOpt.has_value()) {
-          task = std::move(taskOpt.value());
+      task = getTask(curTid);
+      if (task != nullptr) {
           foundTask = true;
       }
 
@@ -225,7 +203,7 @@ private:
       }
 
       // There is a task to run. Execute it!
-      task.func();
+      task->func();
     //   delete task;
       workCount.fetch_sub(1, std::memory_order_relaxed);
     }

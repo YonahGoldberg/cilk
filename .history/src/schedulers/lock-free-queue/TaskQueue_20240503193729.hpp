@@ -14,11 +14,6 @@ public:
     queue.resize(100000);
   }
 
-  TaskQueue(const TaskQueue&) = delete; // Disable copy constructor
-  TaskQueue(TaskQueue&&) = default; // Allow move constructor
-  TaskQueue& operator=(const TaskQueue&) = delete; // Disable copy assignment
-  TaskQueue& operator=(TaskQueue&&) = default; // Allow move assignment
-
   void push(Task<T>job) {
     int bottom = bottomIndex.load(std::memory_order_seq_cst);
     queue[bottom] = std::move(job);

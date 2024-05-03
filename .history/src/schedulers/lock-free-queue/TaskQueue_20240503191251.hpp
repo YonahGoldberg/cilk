@@ -14,14 +14,9 @@ public:
     queue.resize(100000);
   }
 
-  TaskQueue(const TaskQueue&) = delete; // Disable copy constructor
-  TaskQueue(TaskQueue&&) = default; // Allow move constructor
-  TaskQueue& operator=(const TaskQueue&) = delete; // Disable copy assignment
-  TaskQueue& operator=(TaskQueue&&) = default; // Allow move assignment
-
-  void push(Task<T>job) {
+  void push(Task<T> *job) {
     int bottom = bottomIndex.load(std::memory_order_seq_cst);
-    queue[bottom] = std::move(job);
+    queue[bottom] = job;
     bottomIndex.store(bottom + 1, std::memory_order_seq_cst);
   }
 
@@ -33,20 +28,20 @@ public:
     if (top <= bottom) {
       Task<T>& job = queue[bottom];
       if (top != bottom) {
-        Task<T> task = std::move(job);
+        Task<T> task = std::move(*job);
         return task;
       }
       if (topIndex.compare_exchange_strong(top, top + 1,
                                            std::memory_order_seq_cst)) {
         bottomIndex.store(top + 1, std::memory_order_release);
-        Task<T> task = std::move(job);
+        Task<T> task = std::move(*job);
         return task;
       }
       bottomIndex.store(top + 1, std::memory_order_release);
-      return std::nullopt;
+      return nullptr;
     } else {
       bottomIndex.store(top, std::memory_order_seq_cst);
-      return std::nullopt;
+      return nullptr;
     }
   }
 
@@ -57,7 +52,7 @@ public:
       Task<T>& job = queue[top];
       if (topIndex.compare_exchange_strong(top, top + 1,
                                            std::memory_order_seq_cst)) {
-        Task<T> task = std::move(job);
+        Task<T> task = std::move(*job);
         return task;
       }
       return std::nullopt;

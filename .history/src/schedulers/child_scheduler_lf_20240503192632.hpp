@@ -55,7 +55,7 @@ public:
     for (int i = 0; i < n; i++) {
       // emplace_back efficiently stores the thread without needing an extra
       // move
-      TaskQueue<T> queue = TaskQueue<T>();
+      TaskQueue<T> queue = new TaskQueue<T>();
       taskQueues.push_back(queue);
     }
 
@@ -68,7 +68,7 @@ public:
     threadIds[std::this_thread::get_id()] = 0;
     std::packaged_task<T()> task(func);
     auto fut = task.get_future();
-    taskQueues[0].push(Task<T>{std::move(task)});
+    taskQueues[0].push(new Task<T>{std::move(task)});
     workerThread(0);
 
     // join threads when finished
@@ -94,7 +94,7 @@ public:
     std::packaged_task<T()> task(func);
     int tid = getTid();
     auto fut = task.get_future();
-    taskQueues[tid].push(Task<T>{std::move(task)});
+    taskQueues[tid].push(new Task<T>{std::move(task)});
 
     taskCount.fetch_add(1, std::memory_order_relaxed);
     return std::move(fut);
@@ -168,10 +168,8 @@ public:
     while (fut.wait_for(std::chrono::milliseconds(0)) !=
            std::future_status::ready) {
       bool foundTask = false;
-      Task<T> task;
-      std::optional<Task<T>> taskOpt = getTask(tid);
-      if (taskOpt.has_value()) {
-          task = std::move(taskOpt.value());
+      std::optional<Task<T>> task = getTask(tid);
+      if (task.has_value()) {
           foundTask = true;
       }
       if (foundTask) {
@@ -182,6 +180,7 @@ public:
 
       // There is a task to run. Execute it!
       task.func();
+      delete task;
     }
 
     // Return result of future if there is one
@@ -197,15 +196,15 @@ private:
   int getTid() { return threadIds[std::this_thread::get_id()]; }
 
   void workerThread(int tid) {
+    int curTid = tid;
+
     // Loop continuously over all the work queues, starting with this thread's
     // queue If we find any work to do, pop the work off and complete it! This
     // naive way of finding work might cause a lot of contention!
     while (true) {
-      Task<T> task;
       bool foundTask = false;
-      std::optional<Task<T>> taskOpt = getTask(tid);
-      if (taskOpt.has_value()) {
-          task = std::move(taskOpt.value());
+      std::optional<Task<T>> task = getTask(tid);
+      if (task.has_value()) {
           foundTask = true;
       }
 

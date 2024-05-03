@@ -55,7 +55,7 @@ public:
     for (int i = 0; i < n; i++) {
       // emplace_back efficiently stores the thread without needing an extra
       // move
-      TaskQueue<T> queue = TaskQueue<T>();
+      TaskQueue<T> queue = new TaskQueue<T>();
       taskQueues.push_back(queue);
     }
 
@@ -68,7 +68,7 @@ public:
     threadIds[std::this_thread::get_id()] = 0;
     std::packaged_task<T()> task(func);
     auto fut = task.get_future();
-    taskQueues[0].push(Task<T>{std::move(task)});
+    taskQueues[0].push(new Task<T>{std::move(task)});
     workerThread(0);
 
     // join threads when finished
@@ -94,7 +94,7 @@ public:
     std::packaged_task<T()> task(func);
     int tid = getTid();
     auto fut = task.get_future();
-    taskQueues[tid].push(Task<T>{std::move(task)});
+    taskQueues[tid].push(new Task<T>{std::move(task)});
 
     taskCount.fetch_add(1, std::memory_order_relaxed);
     return std::move(fut);
@@ -171,7 +171,7 @@ public:
       Task<T> task;
       std::optional<Task<T>> taskOpt = getTask(tid);
       if (taskOpt.has_value()) {
-          task = std::move(taskOpt.value());
+          task = taskOpt.has_value();
           foundTask = true;
       }
       if (foundTask) {
@@ -205,7 +205,7 @@ private:
       bool foundTask = false;
       std::optional<Task<T>> taskOpt = getTask(tid);
       if (taskOpt.has_value()) {
-          task = std::move(taskOpt.value());
+          task = taskOpt.value();
           foundTask = true;
       }
 

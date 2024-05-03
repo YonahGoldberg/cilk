@@ -39,11 +39,10 @@ public:
             }
             if( topIndex.compare_exchange_strong(top, top + 1, std::memory_order_seq_cst))
             {
-                bottomIndex.store(top + 1, std::memory_order_release);
-                return job;
+                job = nullptr;
             }
             bottomIndex.store(top + 1, std::memory_order_release);
-            return nullptr;
+            return job;
         }
         else
         {

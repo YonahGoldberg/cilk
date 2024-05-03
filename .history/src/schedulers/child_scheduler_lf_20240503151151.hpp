@@ -73,7 +73,7 @@ public:
       // emplace_back efficiently stores the thread without needing an extra
       // move
       threads.emplace_back(&ChildSchedulerLF::workerThread, this, i);
-      threadIds[threads[i - 1].get_id()] = i;
+      threadIds[threads[i -1 ].get_id()] = i;
     }
     // printf("GOT HERE\n");
     threadIds[std::this_thread::get_id()] = 0;
@@ -108,7 +108,7 @@ public:
     auto fut = task.get_future();
     {
       // Lock current thread's task queue before accessing
-    //   std::unique_lock<std::mutex> lock(locks[tid]);
+      std::unique_lock<std::mutex> lock(locks[tid]);
       taskQueues[tid]->Push(new Task<T>{std::move(task)}, tid);
     }
 
@@ -129,7 +129,7 @@ public:
     TaskQueue<T>* queue = taskQueues[curTid];
     Task<T>* task;
     {
-        // std::unique_lock<std::mutex> lock(locks[int(curTid)]);
+        std::unique_lock<std::mutex> lock(locks[int(curTid)]);
         task = queue->Pop(curTid);
     }
     // printf("GET TASK POPPED\n");
@@ -147,7 +147,7 @@ public:
         return nullptr;
       }
       {
-        // std::unique_lock<std::mutex> lock(locks[int(randomIndex)]);
+        std::unique_lock<std::mutex> lock(locks[int(randomIndex)]);
         task = randomQueue->Steal(curTid, randomIndex);
       }
       if (task == nullptr)

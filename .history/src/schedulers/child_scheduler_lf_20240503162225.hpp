@@ -108,7 +108,7 @@ public:
     auto fut = task.get_future();
     {
       // Lock current thread's task queue before accessing
-    //   std::unique_lock<std::mutex> lock(locks[tid]);
+      std::unique_lock<std::mutex> lock(locks[tid]);
       taskQueues[tid]->Push(new Task<T>{std::move(task)}, tid);
     }
 

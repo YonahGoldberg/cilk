@@ -43,7 +43,7 @@ public:
                 return job;
             }
             bottomIndex.store(top + 1, std::memory_order_release);
-            return nullptr;
+            return nullptr
         }
         else
         {

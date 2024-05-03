@@ -27,23 +27,23 @@ public:
 
     Task<T>* Pop(int curTid) {
         int bottom = bottomIndex.load(std::memory_order_seq_cst);
-        int top = topIndex.load(std::memory_order_seq_cst);
         bottom = std::max (0, bottom - 1);
         bottomIndex.store(bottom, std::memory_order_seq_cst);
-        if (top <= bottom)
+        int top = topIndex.load(std::memory_order_seq_cst);
+        if (top < bottom)
         {
             Task<T> *job = std::move(queue[bottom]);
             if ( top != bottom )
             {
                 return job;
             }
-            if( topIndex.compare_exchange_strong(top, top + 1, std::memory_order_seq_cst))
+            int stolenTop = top + 1;
+            if( topIndex.compare_exchange_strong(stolenTop, top + 1, std::memory_order_seq_cst))
             {
-                bottomIndex.store(top + 1, std::memory_order_release);
-                return job;
+                bottomIndex.store(stolenTop, std::memory_order_release);
+                return nullptr;
             }
-            bottomIndex.store(top + 1, std::memory_order_release);
-            return nullptr;
+            return job;
         }
         else
         {

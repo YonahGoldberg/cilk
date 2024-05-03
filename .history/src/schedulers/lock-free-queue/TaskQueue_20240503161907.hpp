@@ -37,13 +37,13 @@ public:
             {
                 return job;
             }
-            if( topIndex.compare_exchange_strong(top, top + 1, std::memory_order_seq_cst))
+            int stolenTop = top + 1;
+            if( topIndex.compare_exchange_strong(stolenTop, top + 1, std::memory_order_seq_cst))
             {
-                bottomIndex.store(top + 1, std::memory_order_release);
-                return job;
+                bottomIndex.store(stolenTop, std::memory_order_release);
+                return nullptr;
             }
-            bottomIndex.store(top + 1, std::memory_order_release);
-            return nullptr;
+            return job;
         }
         else
         {

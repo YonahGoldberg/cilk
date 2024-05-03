@@ -164,38 +164,38 @@ BENCHMARK(BM_Fib)
     ->Unit(benchmark::kMillisecond)
     ->Arg(30)
     ->Setup(initChildSchedulerLF)
-    ->Name("ChildSchedulerLF Fib");
+    ->Name("ChildSchedulerLF Quicksort");
 
-BENCHMARK(BM_NQueens)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(10)
-    ->Setup(initNoSpawnScheduler)
-    ->Name("NoSpawnScheduler N-Queens");
-BENCHMARK(BM_NQueens)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(10)
-    ->Setup(initSimpleScheduler)
-    ->Name("SimpleScheduler N-Queens");
-BENCHMARK(BM_NQueens)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(10)
-    ->Setup(initChildScheduler)
-    ->Name("ChildScheduler N-Queens");
+// BENCHMARK(BM_NQueens)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(10)
+//     ->Setup(initNoSpawnScheduler)
+//     ->Name("NoSpawnScheduler N-Queens");
+// BENCHMARK(BM_NQueens)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(10)
+//     ->Setup(initSimpleScheduler)
+//     ->Name("SimpleScheduler N-Queens");
+// BENCHMARK(BM_NQueens)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(10)
+//     ->Setup(initChildScheduler)
+//     ->Name("ChildScheduler N-Queens");
 
-BENCHMARK(BM_Rectmul)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(64)
-    ->Setup(initNoSpawnScheduler)
-    ->Name("NoSpawnScheduler Rectmul");
-BENCHMARK(BM_Rectmul)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(64)
-    ->Setup(initSimpleScheduler)
-    ->Name("SimpleScheduler Rectmul");
-BENCHMARK(BM_Rectmul)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(64)
-    ->Setup(initChildScheduler)
-    ->Name("ChildScheduler Rectmul");
+// BENCHMARK(BM_Rectmul)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(64)
+//     ->Setup(initNoSpawnScheduler)
+//     ->Name("NoSpawnScheduler Rectmul");
+// BENCHMARK(BM_Rectmul)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(64)
+//     ->Setup(initSimpleScheduler)
+//     ->Name("SimpleScheduler Rectmul");
+// BENCHMARK(BM_Rectmul)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(64)
+//     ->Setup(initChildScheduler)
+//     ->Name("ChildScheduler Rectmul");
 
 BENCHMARK_MAIN();

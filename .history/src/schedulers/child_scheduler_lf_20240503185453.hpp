@@ -94,7 +94,7 @@ public:
     std::packaged_task<T()> task(func);
     int tid = getTid();
     auto fut = task.get_future();
-    taskQueues[tid]->push(new Task<T>{std::move(task)});
+    taskQueues[tid]->Push(new Task<T>{std::move(task)});
 
     taskCount.fetch_add(1, std::memory_order_relaxed);
     return std::move(fut);

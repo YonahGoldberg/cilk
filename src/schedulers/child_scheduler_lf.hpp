@@ -29,10 +29,6 @@
 
 template <typename T> class ChildSchedulerLF : public Scheduler<T> {
 private:
-  // A task that a thread can run.
-//   struct Task {
-//     std::packaged_task<T()> func;
-//   };
   // All the threads in the thread pool
   std::vector<std::thread> threads;
   // Map from std::thread::id to an integer thread id that is easier to work
@@ -40,8 +36,6 @@ private:
   std::unordered_map<std::thread::id, int> threadIds;
   // Each thread has an associated queue of tasks for it to run.
   std::vector<TaskQueue<T> *> taskQueues;
-
-  std::vector<std::mutex> locks;
   // The number of threads in thread pool
   int n;
   // Number of tasks across all queues
@@ -58,8 +52,6 @@ public:
   T run(std::function<T()> func, int n) {
     this->n = n;
     taskQueues.reserve(n);
-    std::vector<std::mutex> muts(n);
-    locks.swap(muts);
     taskCount = 1;
 
     for (int i = 0; i < n; i++) {
@@ -75,12 +67,10 @@ public:
       threads.emplace_back(&ChildSchedulerLF::workerThread, this, i);
       threadIds[threads[i - 1].get_id()] = i;
     }
-    // printf("GOT HERE\n");
     threadIds[std::this_thread::get_id()] = 0;
     std::packaged_task<T()> task(func);
     auto fut = task.get_future();
-    taskQueues[0]->Push(new Task<T>{std::move(task)}, 0);
-    // printf("GOT HERE1\n");
+    taskQueues[0]->Push(new Task<T>{std::move(task)});
     workerThread(0);
 
     // join threads when finished
@@ -106,11 +96,7 @@ public:
     std::packaged_task<T()> task(func);
     int tid = getTid();
     auto fut = task.get_future();
-    {
-      // Lock current thread's task queue before accessing
-    //   std::unique_lock<std::mutex> lock(locks[tid]);
-      taskQueues[tid]->Push(new Task<T>{std::move(task)}, tid);
-    }
+    taskQueues[tid]->Push(new Task<T>{std::move(task)});
 
     taskCount.fetch_add(1, std::memory_order_relaxed);
     return std::move(fut);
@@ -128,28 +114,22 @@ public:
   Task<T>* getTask(int curTid) {
     TaskQueue<T>* queue = taskQueues[curTid];
     Task<T>* task;
-    {
-        // std::unique_lock<std::mutex> lock(locks[int(curTid)]);
-        task = queue->Pop(curTid);
-    }
-    // printf("GET TASK POPPED\n");
+    task = queue->pop();
+
     if (task == nullptr){
       size_t randomIndex = GetRandomTaskQueue();
       if (randomIndex == curTid){
         std::this_thread::yield();
         return nullptr;
       }
-    //   printf("RANDOM INDEX %d\n", randomIndex);
+
       TaskQueue<T> *randomQueue = taskQueues[randomIndex];
       if ( queue == randomQueue )
       {
         std::this_thread::yield();
         return nullptr;
       }
-      {
-        // std::unique_lock<std::mutex> lock(locks[int(randomIndex)]);
-        task = randomQueue->Steal(curTid, randomIndex);
-      }
+      task = randomQueue->steal();
       if (task == nullptr)
       {
         std::this_thread::yield();
@@ -168,25 +148,10 @@ public:
            std::future_status::ready) {
       Task<T>* task;
       bool foundTask = false;
-      {
-        if (tid != 0) {
-            // printf("SYNCING FOR %d\n", tid);
-        }       
-        {
-            // std::unique_lock<std::mutex> lock(locks[tid]);
-            task = getTask(tid);
-        }
-        if (task != nullptr) {
-            foundTask = true;
-        }
-        // std::unique_lock<std::mutex> lock(locks[tid]);
-        // if (!taskQueues[tid].empty()) {
-        //   foundTask = true;
-        //   task = std::move(taskQueues[tid].front());
-        //   taskQueues[tid].pop_front();
-        // }
+      task = getTask(tid);
+      if (task != nullptr) {
+          foundTask = true;
       }
-
       if (foundTask) {
         taskCount.fetch_sub(1, std::memory_order_relaxed);
       } else {
@@ -219,13 +184,9 @@ private:
     while (true) {
       Task<T>* task;
       bool foundTask = false;
-      {
-        // printf("GETTING TASK FOR %d\n", tid);
-        task = getTask(curTid);
-        // printf("GOT TASK FOR %d\n", tid);
-        if (task != nullptr) {
-            foundTask = true;
-        }
+      task = getTask(curTid);
+      if (task != nullptr) {
+          foundTask = true;
       }
 
       if (foundTask) {
@@ -244,9 +205,7 @@ private:
       }
 
       // There is a task to run. Execute it!
-    //   printf("ATTEMPTING TO RUN for %d\n", tid);
       task->func();
-    //   printf("FINISHED RUN for %d\n", tid);
     //   delete task;
       workCount.fetch_sub(1, std::memory_order_relaxed);
     }

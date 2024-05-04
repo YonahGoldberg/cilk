@@ -92,6 +92,7 @@ public:
   std::future<T> spawn(std::function<T()> func) {
     std::packaged_task<T()> task(func);
     int tid = getTid();
+    std::cout << tid << ": spawning\n";
     auto fut = task.get_future();
     taskQueues[tid].push(Task<T>{std::move(task)});
 
@@ -109,6 +110,7 @@ public:
   }
 
   std::optional<Task<T>> getTask(int curTid) {
+    std::cout << curTid << ": in getTask\n";
     TaskQueue<T>& queue = taskQueues[curTid];
     std::optional<Task<T>> task = queue.pop();
 
@@ -121,16 +123,19 @@ public:
 
       TaskQueue<T>& randomQueue = taskQueues[randomIndex];
       if (&queue == &randomQueue) {
+        std::cout << "in here\n";
         std::this_thread::yield();
         return std::nullopt;
       }
       task = randomQueue.steal();
       if (!task.has_value()) {
+        std::cout << "stolen\n";
         std::this_thread::yield();
         return std::nullopt;
       }
     }
-    return task;
+    std::cout << "task has value\n";
+    return std::move(task);
   }
   // std::optional<Task<T>> getTask(int curTid) {
   //   TaskQueue<T> queue = taskQueues[curTid];
@@ -162,6 +167,7 @@ public:
   // Attempt to steal work while waiting on fut to finish
   T sync(std::future<T> fut) {
     int tid = getTid();
+    std::cout << tid << ": in sync\n";
 
     // While future is not valid, attempt to steal work
     while (fut.wait_for(std::chrono::milliseconds(0)) !=
@@ -200,6 +206,7 @@ private:
     // queue If we find any work to do, pop the work off and complete it! This
     // naive way of finding work might cause a lot of contention!
     while (true) {
+      std::cout << tid << std::endl;
       Task<T> task;
       bool foundTask = false;
       std::optional<Task<T>> taskOpt = getTask(tid);

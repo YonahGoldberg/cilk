@@ -28,7 +28,7 @@
 // ChildSchedulerLF<int> childSchedulerLF;
 
 // Number of threads to spawn when running a test program
-const int NUM_THREADS = 8;
+const int NUM_THREADS = 2;
 
 // Utility function for quicksort to ensure an array is sorted
 bool isSorted(const std::vector<int>& vec) {
@@ -141,6 +141,7 @@ BENCHMARK(BM_Quicksort)
 BENCHMARK(BM_Quicksort)
     ->Unit(benchmark::kMillisecond)
     ->Arg(1000000)
+    ->Iterations(1)
     ->Setup(initChildSchedulerLF)
     ->Name("ChildSchedulerLF Quicksort");
 

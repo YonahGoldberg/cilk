@@ -15,11 +15,14 @@ public:
   }
 
   TaskQueue(const TaskQueue&) = delete; // Disable copy constructor
-  TaskQueue(TaskQueue&&) = default; // Allow move constructor
+  TaskQueue(TaskQueue&& other) noexcept
+      : bottomIndex(other.bottomIndex.load(std::memory_order_relaxed)),
+        topIndex(other.topIndex.load(std::memory_order_relaxed)),
+        queue(std::move(other.queue)) {} // Allow move constructor
   TaskQueue& operator=(const TaskQueue&) = delete; // Disable copy assignment
-  TaskQueue& operator=(TaskQueue&&) = default; // Allow move assignment
+  TaskQueue& operator=(TaskQueue&&) = delete; // Disable move assignment
 
-  void push(Task<T>job) {
+  void push(Task<T> job) {
     int bottom = bottomIndex.load(std::memory_order_seq_cst);
     queue[bottom] = std::move(job);
     bottomIndex.store(bottom + 1, std::memory_order_seq_cst);

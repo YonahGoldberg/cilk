@@ -49,14 +49,13 @@ public:
   // all threads are joined.
   T run(std::function<T()> func, int n) {
     this->n = n;
-    taskQueues.reserve(n);
+    // taskQueues.reserve(n);
     taskCount = 1;
 
     for (int i = 0; i < n; i++) {
       // emplace_back efficiently stores the thread without needing an extra
       // move
-      TaskQueue<T> queue = TaskQueue<T>();
-      taskQueues.push_back(queue);
+      taskQueues.emplace_back(TaskQueue<T>());
     }
 
     for (int i = 1; i < n; i++) {

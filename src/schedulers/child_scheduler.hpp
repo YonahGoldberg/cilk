@@ -62,7 +62,7 @@ public:
       // emplace_back efficiently stores the thread without needing an extra
       // move
       threads.emplace_back(&ChildScheduler::workerThread, this, i);
-      threadIds[threads[i].get_id()] = i;
+      threadIds[threads[i - 1].get_id()] = i;
     }
 
     threadIds[std::this_thread::get_id()] = 0;
@@ -108,9 +108,6 @@ public:
   // Attempt to steal work while waiting on fut to finish
   T sync(std::future<T> fut) {
     int tid = getTid();
-    if (tid != 0) {
-          printf("SYNCING FOR %d\n", tid);
-      }   
     // While future is not valid, attempt to steal work
     while (fut.wait_for(std::chrono::milliseconds(0)) !=
            std::future_status::ready) {

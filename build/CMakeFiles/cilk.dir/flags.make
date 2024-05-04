@@ -6,7 +6,7 @@ CXX_DEFINES = -DBENCHMARK_STATIC_DEFINE
 
 CXX_INCLUDES = -isystem /usr/local/include
 
-CXX_FLAGSarm64 = -g -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
+CXX_FLAGSarm64 = -O3 -DNDEBUG -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
 
-CXX_FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
+CXX_FLAGS = -O3 -DNDEBUG -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
 

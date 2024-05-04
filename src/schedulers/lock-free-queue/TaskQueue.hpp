@@ -29,11 +29,9 @@ public:
   }
 
   std::optional<Task<T>> pop() {
-    std::cout << "in pop\n";
     int bottom = bottomIndex.load(std::memory_order_seq_cst);
+    if (bottom == 0) return std::nullopt;
     int top = topIndex.load(std::memory_order_seq_cst);
-    std::cout << bottom << std::endl;
-    std::cout << top << std::endl;
     bottom = std::max(0, bottom - 1);
     bottomIndex.store(bottom, std::memory_order_seq_cst);
     if (top <= bottom) {
@@ -44,7 +42,6 @@ public:
       if (topIndex.compare_exchange_strong(top, top + 1,
                                            std::memory_order_seq_cst)) {
         bottomIndex.store(top + 1, std::memory_order_release);
-        std::cout << "got task\n";
         return std::move(*job);
       }
       bottomIndex.store(top + 1, std::memory_order_release);

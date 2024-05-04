@@ -78,7 +78,9 @@
         "iterator": "cpp",
         "csetjmp": "cpp",
         "shared_mutex": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "charconv": "cpp",
+        "execution": "cpp"
     },
     "clang-format.executable": "/Users/yonah/Repos/cilk/.clang-format",
     "C_Cpp.errorSquiggles": "disabled"

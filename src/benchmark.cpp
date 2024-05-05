@@ -348,22 +348,26 @@ BENCHMARK(BM_Heat)
 
 BENCHMARK(BM_PFor)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(100)
+    ->Arg(500)
+    ->Iterations(10)
     ->Setup(initNoSpawnScheduler)
     ->Name("NoSpawnScheduler PFor");
 BENCHMARK(BM_PFor)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(100)
+    ->Arg(500)
+    ->Iterations(10)
     ->Setup(initSimpleScheduler)
     ->Name("SimpleScheduler PFor");
 BENCHMARK(BM_PFor)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(100)
+    ->Arg(500)
+    ->Iterations(10)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler PFor");
 BENCHMARK(BM_PFor)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(100)
+    ->Arg(500)
+    ->Iterations(10)
     ->Setup(initChildScheduler)
     ->Name("ChildSchedulerLF PFor");
 

@@ -2,11 +2,11 @@
  * @file benchmark.cppp
  * @author Yonah Goldberg (ygoldber@andrew.cmu.edu)
  * @author Jack Ellinger (jellinge@andrew.cmu.edu)
- * 
- * @brief this is the main file executed to benchmark all of our schedulers. We use
- * Google's benchmarking library. Information can be found here:
- * https://github.com/google/benchmark/blob/main/docs/user_guide.md 
- * 
+ *
+ * @brief this is the main file executed to benchmark all of our schedulers. We
+ * use Google's benchmarking library. Information can be found here:
+ * https://github.com/google/benchmark/blob/main/docs/user_guide.md
+ *
  */
 
 #include <algorithm>
@@ -19,17 +19,18 @@
 
 #include "scheduler_instance.hpp"
 #include "tests/fib.hpp"
+#include "tests/nbody.hpp"
 #include "tests/nqueens.hpp"
 #include "tests/quicksort.hpp"
 #include "tests/rectmul.hpp"
-#include "tests/nbody.hpp"
 
 // Number of threads to spawn when running a test program
 const int NUM_THREADS = 8;
 
 // Utility function for quicksort to ensure an array is sorted
-bool isSorted(const std::vector<int>& vec) {
-  // Check if the vector has less than 2 elements, as a vector with 0 or 1 element is always sorted
+bool isSorted(const std::vector<int> &vec) {
+  // Check if the vector has less than 2 elements, as a vector with 0 or 1
+  // element is always sorted
   if (vec.size() < 2) {
     return true;
   }
@@ -37,7 +38,8 @@ bool isSorted(const std::vector<int>& vec) {
   // Iterate through the vector and compare each element with the next one
   for (size_t i = 0; i < vec.size() - 1; ++i) {
     if (vec[i] > vec[i + 1]) {
-      return false; // If any element is greater than its next element, the vector is not sorted
+      return false; // If any element is greater than its next element, the
+                    // vector is not sorted
     }
   }
 
@@ -46,11 +48,11 @@ bool isSorted(const std::vector<int>& vec) {
 
 // Custom assert function. We want to fail if any of our programs we test
 // are not correct.
-void assertTrue(bool condition, const std::string& message) {
-    if (!condition) {
-        std::cerr << "Assertion failed: " << message << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
+void assertTrue(bool condition, const std::string &message) {
+  if (!condition) {
+    std::cerr << "Assertion failed: " << message << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
 }
 
 // Initialization functions that run at the beginning of each test.
@@ -79,13 +81,14 @@ static void BM_Quicksort(benchmark::State &state) {
   std::vector<int> copy(arr);
 
   for (auto _ : state) {
-    scheduler->run([&arr] { return quicksort(arr.data(), arr.data() + arr.size()); }, NUM_THREADS);
+    scheduler->run(
+        [&arr] { return quicksort(arr.data(), arr.data() + arr.size()); },
+        NUM_THREADS);
     state.PauseTiming();
     assertTrue(isSorted(arr), "Quicksort");
     arr = copy;
     state.ResumeTiming();
   }
-  
 }
 
 // Benchmark fibonacci. We test the inefficient O(2^n) recursive
@@ -106,7 +109,7 @@ static void BM_NQueens(benchmark::State &state) {
   char *copy = new char[n];
   std::copy(a, a + n, copy);
   for (auto _ : state) {
-    scheduler->run([n, a] {return nqueens(n, 0, a);}, NUM_THREADS);
+    scheduler->run([n, a] { return nqueens(n, 0, a); }, NUM_THREADS);
     a = copy;
   }
   delete[] a;
@@ -115,15 +118,15 @@ static void BM_NQueens(benchmark::State &state) {
 static void BM_Rectmul(benchmark::State &state) {
   int x = state.range(0);
   for (auto _ : state) {
-    scheduler->run([x] {return rectmul(x,x,x);}, NUM_THREADS);
+    scheduler->run([x] { return rectmul(x, x, x); }, NUM_THREADS);
   }
 }
 
 double getRandomDouble(double min, double max) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> dist(min, max);
-    return dist(gen);
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<double> dist(min, max);
+  return dist(gen);
 }
 
 static void BM_NBody(benchmark::State &state) {
@@ -132,25 +135,27 @@ static void BM_NBody(benchmark::State &state) {
 
   // Generate random input for the simulation
   for (int i = 0; i < n; ++i) {
-      double x = getRandomDouble(-100.0, 100.0);
-      double y = getRandomDouble(-100.0, 100.0);
-      double vx = getRandomDouble(-10.0, 10.0);
-      double vy = getRandomDouble(-10.0, 10.0);
-      double m = getRandomDouble(1, 1000.0);
-      particles.push_back(Particle(x, y, vx, vy, m));
+    double x = getRandomDouble(-100.0, 100.0);
+    double y = getRandomDouble(-100.0, 100.0);
+    double vx = getRandomDouble(-10.0, 10.0);
+    double vy = getRandomDouble(-10.0, 10.0);
+    double m = getRandomDouble(1, 1000.0);
+    particles.push_back(Particle(x, y, vx, vy, m));
   }
 
   std::vector<Particle> copy(particles);
 
   // Run the simulation for benchmarking
   for (auto _ : state) {
-      // Run the n-body simulation
-      scheduler->run([&particles] {
+    // Run the n-body simulation
+    scheduler->run(
+        [&particles] {
           simulateNBody(particles);
-          return 0; 
-      }, NUM_THREADS);
-      particles = copy;
-      // scheduler->run([x] { return fib(x); }, NUM_THREADS);
+          return 0;
+        },
+        NUM_THREADS);
+    particles = copy;
+    // scheduler->run([x] { return fib(x); }, NUM_THREADS);
   }
 }
 

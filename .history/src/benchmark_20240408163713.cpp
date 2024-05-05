@@ -39,7 +39,8 @@ int fib(int n) {
 //     auto x = scheduler->spawn(
 //         [begin, middle]() { return quicksort(begin, middle); });
 //     auto y = scheduler->spawn(
-//         [begin, middle, end]() mutable { return quicksort(++middle, ++end); });
+//         [begin, middle, end]() mutable { return quicksort(++middle, ++end);
+//         });
 
 //     scheduler->steal(std::move(x));
 //     scheduler->steal(std::move(y));

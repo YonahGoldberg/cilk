@@ -1,7 +1,6 @@
 #include "quicksort.hpp"
 #include "scheduler_instance.hpp"
 
-
 int quicksort(int *begin, int *end) {
   if (begin != end) {
     end--;

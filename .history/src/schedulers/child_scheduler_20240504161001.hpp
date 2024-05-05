@@ -2,22 +2,23 @@
  * @file child_scheduler.hpp
  * @author Yonah Goldberg (ygoldber@andrew.cmu.edu)
  * @author Jack Ellinger (jellinge@andrew.cmu.edu)
- * 
- * @brief A child stealing scheduler. Each thread has its own deque that is protected
- * via a fine-grained lock. Spawned tasks are pushed to the front of a thread's deque. If
- * a thread has no work, it steals from the back of another thread's deque. Threads only steal
- * from their own queue while synchronizing (waiting on dependencies).
- * 
+ *
+ * @brief A child stealing scheduler. Each thread has its own deque that is
+ * protected via a fine-grained lock. Spawned tasks are pushed to the front of a
+ * thread's deque. If a thread has no work, it steals from the back of another
+ * thread's deque. Threads only steal from their own queue while synchronizing
+ * (waiting on dependencies).
+ *
  */
 
 #ifndef CHILD_SCHEDULER_HPP
 #define CHILD_SCHEDULER_HPP
 
+#include <deque>
 #include <functional>
 #include <future>
 #include <iostream>
 #include <mutex>
-#include <deque>
 #include <thread>
 #include <vector>
 
@@ -73,14 +74,14 @@ public:
     workerThread(0);
 
     // join threads when finished
-    for (auto& t : threads) {
+    for (auto &t : threads) {
       t.join();
     }
 
     threads.clear();
     threadIds.clear();
 
-    // Return result of func if there is one 
+    // Return result of func if there is one
     if constexpr (std::is_void<T>::value) {
       fut.get();
     } else {
@@ -172,9 +173,9 @@ private:
         workCount.fetch_add(1, std::memory_order_relaxed);
         taskCount.fetch_sub(1, std::memory_order_relaxed);
       } else {
-        // No more tasks across all queues AND no workers currently running a task
-        // If a workers is running a task then it might add more tasks to its queue,
-        // so we keep this thread runing
+        // No more tasks across all queues AND no workers currently running a
+        // task If a workers is running a task then it might add more tasks to
+        // its queue, so we keep this thread runing
         if (taskCount == 0 && workCount == 0) {
           break;
         }

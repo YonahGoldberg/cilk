@@ -32,8 +32,8 @@ int quicksort(int *begin, int *end) {
         std::partition(begin, end, [pivot](int x) { return x < pivot; });
     std::swap(*end, *middle);
 
-    auto x = scheduler.spawn(
-        [begin, middle]() { return quicksort(begin, middle); });
+    auto x =
+        scheduler.spawn([begin, middle]() { return quicksort(begin, middle); });
     auto y = scheduler.spawn(
         [begin, middle, end]() mutable { return quicksort(++middle, ++end); });
 
@@ -46,7 +46,8 @@ int quicksort(int *begin, int *end) {
 
 // using Matrix = std::vector<std::vector<double>>;
 
-// void multiplyCell(const Matrix& A, const Matrix& B, Matrix& C, size_t row, size_t col) {
+// void multiplyCell(const Matrix& A, const Matrix& B, Matrix& C, size_t row,
+// size_t col) {
 //     double sum = 0.0;
 //     for (size_t k = 0; k < A.size(); k++) {
 //         sum += A[row][k] * B[k][col];
@@ -57,36 +58,37 @@ int quicksort(int *begin, int *end) {
 // void matrixMultiplyParallel(const Matrix& A, const Matrix& B, Matrix& C) {
 //     for (size_t i = 0; i < A.size(); i++) {
 //         for (size_t j = 0; j < B.size(); j++) {
-//             auto result = scheduler.spawn([A, B, C, i, j] { return multiplyCell(A, B, C, i, j); }) 
+//             auto result = scheduler.spawn([A, B, C, i, j] { return
+//             multiplyCell(A, B, C, i, j); })
 //         }
 //     }
-//     // cilk_sync; 
+//     // cilk_sync;
 // }
 
-static void init8Threads(const benchmark::State& state) {
-  scheduler.init(8);
-}
+static void init8Threads(const benchmark::State &state) { scheduler.init(8); }
 
-static void joinThreads(const benchmark::State& state) {
+static void joinThreads(const benchmark::State &state) {
   scheduler.~SimpleScheduler();
 }
 
+static void BM_Quicksort(benchmark::State &state) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<int> dist(1, 1000); // Adjust range as needed
 
-static void BM_Quicksort(benchmark::State& state) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dist(1, 1000); // Adjust range as needed
+  std::vector<int> arr(state.range(0));
+  for (auto &elem : arr) {
+    elem = dist(gen); // Fill the array with random integers
+  }
 
-    std::vector<int> arr(state.range(0));
-    for (auto& elem : arr) {
-        elem = dist(gen); // Fill the array with random integers
-    }
-
-    for (auto _ : state) {
-        quicksort(arr.data(), arr.data() + arr.size());
-    }
+  for (auto _ : state) {
+    quicksort(arr.data(), arr.data() + arr.size());
+  }
 }
 
-BENCHMARK(BM_Quicksort)->Unit(benchmark::kMillisecond)->Range(2 << 5, 2 << 18)->Setup(init8Threads);
+BENCHMARK(BM_Quicksort)
+    ->Unit(benchmark::kMillisecond)
+    ->Range(2 << 5, 2 << 18)
+    ->Setup(init8Threads);
 
 BENCHMARK_MAIN();

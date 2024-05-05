@@ -256,9 +256,9 @@ int main(int argc, char *argv[]) {
 
   int ret, benchmark, help;
 
-  nx = 4096;
-  ny = 1024;
-  nt = 100;
+  nx = 16384;
+  ny = 4096;
+  nt = 400;
   xu = 0.0;
   xo = 1.570796326794896558;
   yu = 0.0;

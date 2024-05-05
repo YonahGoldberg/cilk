@@ -7,11 +7,11 @@
 #include <iterator>
 #include <random>
 
+#include "fib.hpp"
+#include "quicksort.hpp"
 #include "scheduler.hpp"
 #include "simple_cs_scheduler.hpp"
 #include "simple_scheduler.hpp"
-#include "fib.hpp"
-#include "quicksort.hpp"
 
 // SimpleScheduler<int> scheduler;
 
@@ -26,7 +26,8 @@
 //     auto x = scheduler.spawn(
 //         [begin, middle]() { return quicksort(begin, middle); });
 //     auto y = scheduler.spawn(
-//         [begin, middle, end]() mutable { return quicksort(++middle, ++end); });
+//         [begin, middle, end]() mutable { return quicksort(++middle, ++end);
+//         });
 
 //     scheduler.steal(std::move(x));
 //     scheduler.steal(std::move(y));
@@ -37,7 +38,8 @@
 
 // using Matrix = std::vector<std::vector<double>>;
 
-// void multiplyCell(const Matrix& A, const Matrix& B, Matrix& C, size_t row, size_t col) {
+// void multiplyCell(const Matrix& A, const Matrix& B, Matrix& C, size_t row,
+// size_t col) {
 //     double sum = 0.0;
 //     for (size_t k = 0; k < A.size(); k++) {
 //         sum += A[row][k] * B[k][col];
@@ -48,7 +50,8 @@
 // void matrixMultiplyParallel(const Matrix& A, const Matrix& B, Matrix& C) {
 //     for (size_t i = 0; i < A.size(); i++) {
 //         for (size_t j = 0; j < B.size(); j++) {
-//             auto result = scheduler.spawn([A, B, C, i, j] { return multiplyCell(A, B, C, i, j); }) 
+//             auto result = scheduler.spawn([A, B, C, i, j] { return
+//             multiplyCell(A, B, C, i, j); })
 //         }
 //     }
 //     scheduler.sync();
@@ -56,25 +59,27 @@
 
 // // Simple n-body problem
 // struct Particle {
-//     double x, y, z; 
-//     double vx, vy, vz; 
+//     double x, y, z;
+//     double vx, vy, vz;
 //     double mass;
 // };
 
-// void calculateForce(const Particle& a, const Particle& b, double& fx, double& fy, double& fz) {
-//     double G = 9.8; 
+// void calculateForce(const Particle& a, const Particle& b, double& fx, double&
+// fy, double& fz) {
+//     double G = 9.8;
 //     double dx = b.x - a.x;
 //     double dy = b.y - a.y;
 //     double dz = b.z - a.z;
-//     double distSq = dx*dx + dy*dy + dz*dz + 1e-10; // Add small value to prevent division by zero
-//     double distSixth = distSq * distSq * distSq;
+//     double distSq = dx*dx + dy*dy + dz*dz + 1e-10; // Add small value to
+//     prevent division by zero double distSixth = distSq * distSq * distSq;
 //     double force = G * a.mass * b.mass / distSixth;
 //     fx += force * dx;
 //     fy += force * dy;
 //     fz += force * dz;
 // }
 
-// void updateParticle(Particle& a, const double fx, const double fy, const double fz, double deltaTime) {
+// void updateParticle(Particle& a, const double fx, const double fy, const
+// double fz, double deltaTime) {
 //     // Update velocities based on force
 //     a.vx += fx / a.mass * deltaTime;
 //     a.vy += fy / a.mass * deltaTime;
@@ -86,8 +91,8 @@
 //     a.z += a.vz * deltaTime;
 // }
 
-
-// void nBodySimulationParallel(std::vector<Particle>& particles, double deltaTime) {
+// void nBodySimulationParallel(std::vector<Particle>& particles, double
+// deltaTime) {
 //     const size_t numParticles = particles.size();
 //     std::vector<std::tuple<double, double, double>> forces(numParticles);
 
@@ -115,7 +120,6 @@
 //     }
 //     scheduler.sync();
 // }
-
 
 // int ok(int n, char *a) {
 //     for (int i = 0; i < n; i++) {
@@ -152,7 +156,8 @@
 //     }
 
 //     // Wait for all spawned tasks to complete
-//     scheduler.sync(); // Assuming your scheduler has a way to implicitly wait on all tasks or futures
+//     scheduler.sync(); // Assuming your scheduler has a way to implicitly wait
+//     on all tasks or futures
 
 //     // Collect results from all futures
 //     for (auto &fut : futures) {
@@ -162,32 +167,30 @@
 //     return solNum;
 // }
 
+static void init8Threads(const benchmark::State &state) { scheduler.init(8); }
 
-
-static void init8Threads(const benchmark::State& state) {
-  scheduler.init(8);
-}
-
-static void joinThreads(const benchmark::State& state) {
+static void joinThreads(const benchmark::State &state) {
   scheduler.~SimpleScheduler();
 }
 
+static void BM_Quicksort(benchmark::State &state) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<int> dist(1, 1000); // Adjust range as needed
 
-static void BM_Quicksort(benchmark::State& state) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dist(1, 1000); // Adjust range as needed
+  std::vector<int> arr(state.range(0));
+  for (auto &elem : arr) {
+    elem = dist(gen); // Fill the array with random integers
+  }
 
-    std::vector<int> arr(state.range(0));
-    for (auto& elem : arr) {
-        elem = dist(gen); // Fill the array with random integers
-    }
-
-    for (auto _ : state) {
-        quicksort(arr.data(), arr.data() + arr.size());
-    }
+  for (auto _ : state) {
+    quicksort(arr.data(), arr.data() + arr.size());
+  }
 }
 
-BENCHMARK(BM_Quicksort)->Unit(benchmark::kMillisecond)->Range(2 << 5, 2 << 18)->Setup(init8Threads);
+BENCHMARK(BM_Quicksort)
+    ->Unit(benchmark::kMillisecond)
+    ->Range(2 << 5, 2 << 18)
+    ->Setup(init8Threads);
 
 BENCHMARK_MAIN();

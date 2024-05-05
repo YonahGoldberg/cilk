@@ -9,8 +9,8 @@ int quicksort(int *begin, int *end) {
         std::partition(begin, end, [pivot](int x) { return x < pivot; });
     std::swap(*end, *middle);
 
-    auto x = scheduler.spawn(
-        [begin, middle]() { return quicksort(begin, middle); });
+    auto x =
+        scheduler.spawn([begin, middle]() { return quicksort(begin, middle); });
     auto y = scheduler.spawn(
         [begin, middle, end]() mutable { return quicksort(++middle, ++end); });
 

@@ -34,7 +34,7 @@ void assertTrue(bool condition, const std::string &message) {
   }
 }
 
-void quicksort(int *begin, int *end) {
+int seqQuicksort(int *begin, int *end) {
   if (begin != end) {
     end--;
     int pivot = *end;
@@ -42,9 +42,27 @@ void quicksort(int *begin, int *end) {
         std::partition(begin, end, [pivot](int x) { return x < pivot; });
     std::swap(*end, *middle);
 
-    cilk_spawn quicksort(begin, middle);
-    quicksort(++middle, ++end);
+    seqQuicksort(begin, middle);
+    seqQuicksort(++middle, ++end);
   }
+
+  return 0;
+}
+
+void quicksort(int *begin, int *end) {
+  if (end - begin <= 5000) {
+    seqQuicksort(begin, end);
+    return;
+  }
+
+  end--;
+  int pivot = *end;
+  auto middle =
+      std::partition(begin, end, [pivot](int x) { return x < pivot; });
+  std::swap(*end, *middle);
+
+  cilk_spawn quicksort(begin, middle);
+  quicksort(++middle, ++end);
 }
 
 int main() {

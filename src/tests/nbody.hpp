@@ -1,3 +1,5 @@
+#include <vector>
+
 // Structure to represent a 2D vector
 struct Vector2D {
   double x, y;

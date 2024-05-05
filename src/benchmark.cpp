@@ -176,17 +176,6 @@ static void BM_Heat(benchmark::State &state) {
   int n = state.range(0);
   std::vector<Particle> particles;
 
-  // Generate random input for the simulation
-  // int nx = 4096;
-  // int ny = 1024;
-  // int nt = 100;
-  // double xu = 0.0;
-  // double xo = 1.570796326794896558;
-  // double yu = 0.0;
-  // double yo = 1.570796326794896558;
-  // double tu = 0.0;
-  // double to = 0.0000001;
-  // int leafmaxcol = 1;
   int nx = 16384;
   int ny = 4096;
   int nt = 400;

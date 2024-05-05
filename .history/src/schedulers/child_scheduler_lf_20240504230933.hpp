@@ -2,28 +2,27 @@
  * @file child_scheduler.hpp
  * @author Yonah Goldberg (ygoldber@andrew.cmu.edu)
  * @author Jack Ellinger (jellinge@andrew.cmu.edu)
- * 
- * @brief A child stealing scheduler. Each thread has its own deque and each thread
- * will add and take from the bottom from their queues. If a thread has no work
- * they can steal from other queues using cmp exhange. 
+ *
+ * @brief A child stealing scheduler. Each thread has its own deque and each
+ * thread will add and take from the bottom from their queues. If a thread has
+ * no work they can steal from other queues using cmp exhange.
  */
 
 #ifndef CHILD_SCHEDULER_LF_HPP
 #define CHILD_SCHEDULER_LF_HPP
 
+#include <deque>
 #include <functional>
 #include <future>
 #include <iostream>
 #include <mutex>
-#include <deque>
+#include <random>
 #include <thread>
 #include <vector>
-#include <random>
 
-
-#include "scheduler.hpp"
-#include "lock-free-queue/TaskQueue.hpp"
 #include "lock-free-queue/Task.hpp"
+#include "lock-free-queue/TaskQueue.hpp"
+#include "scheduler.hpp"
 
 template <typename T> class ChildSchedulerLF : public Scheduler<T> {
 private:
@@ -72,14 +71,14 @@ public:
     workerThread(0);
 
     // join threads when finished
-    for (auto& t : threads) {
+    for (auto &t : threads) {
       t.join();
     }
 
     threads.clear();
     threadIds.clear();
 
-    // Return result of func if there is one 
+    // Return result of func if there is one
     if constexpr (std::is_void<T>::value) {
       fut.get();
     } else {
@@ -100,36 +99,33 @@ public:
     return std::move(fut);
   }
 
-  size_t GetRandomTaskQueue()
-  {
+  size_t GetRandomTaskQueue() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     static std::uniform_int_distribution<> distribution(0, n - 1);
-    size_t index = static_cast<size_t> ( std::round( distribution( gen ) ) );
+    size_t index = static_cast<size_t>(std::round(distribution(gen)));
     return index;
   }
 
-  Task<T>* getTask(int curTid) {
-    TaskQueue<T>* queue = taskQueues[curTid];
-    Task<T>* task;
+  Task<T> *getTask(int curTid) {
+    TaskQueue<T> *queue = taskQueues[curTid];
+    Task<T> *task;
     task = queue->pop();
 
-    if (task == nullptr){
+    if (task == nullptr) {
       size_t randomIndex = GetRandomTaskQueue();
-      if (randomIndex == curTid){
+      if (randomIndex == curTid) {
         std::this_thread::yield();
         return nullptr;
       }
 
       TaskQueue<T> *randomQueue = taskQueues[randomIndex];
-      if ( queue == randomQueue )
-      {
+      if (queue == randomQueue) {
         std::this_thread::yield();
         return nullptr;
       }
       task = randomQueue->steal();
-      if (task == nullptr)
-      {
+      if (task == nullptr) {
         std::this_thread::yield();
         return nullptr;
       }
@@ -144,11 +140,11 @@ public:
     // While future is not valid, attempt to steal work
     while (fut.wait_for(std::chrono::milliseconds(0)) !=
            std::future_status::ready) {
-      Task<T>* task;
+      Task<T> *task;
       bool foundTask = false;
       task = getTask(tid);
       if (task != nullptr) {
-          foundTask = true;
+        foundTask = true;
       }
       if (foundTask) {
         taskCount.fetch_sub(1, std::memory_order_relaxed);
@@ -180,20 +176,20 @@ private:
     // queue If we find any work to do, pop the work off and complete it! This
     // naive way of finding work might cause a lot of contention!
     while (true) {
-      Task<T>* task;
+      Task<T> *task;
       bool foundTask = false;
       task = getTask(curTid);
       if (task != nullptr) {
-          foundTask = true;
+        foundTask = true;
       }
 
       if (foundTask) {
         workCount.fetch_add(1, std::memory_order_relaxed);
         taskCount.fetch_sub(1, std::memory_order_relaxed);
       } else {
-        // No more tasks across all queues AND no workers currently running a task
-        // If a workers is running a task then it might add more tasks to its queue,
-        // so we keep this thread runing
+        // No more tasks across all queues AND no workers currently running a
+        // task If a workers is running a task then it might add more tasks to
+        // its queue, so we keep this thread runing
         if (taskCount == 0 && workCount == 0) {
           break;
         }
@@ -204,7 +200,7 @@ private:
 
       // There is a task to run. Execute it!
       task->func();
-    //   delete task;
+      //   delete task;
       workCount.fetch_sub(1, std::memory_order_relaxed);
     }
   }

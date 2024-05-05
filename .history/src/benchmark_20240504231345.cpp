@@ -152,6 +152,7 @@ static void BM_NBody(benchmark::State &state) {
           return 0; 
       }, NUM_THREADS);
       particles = copy;
+      // scheduler->run([x] { return fib(x); }, NUM_THREADS);
   }
 }
 
@@ -194,11 +195,6 @@ BENCHMARK(BM_Fib)
     ->Arg(40)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler Fib");
-BENCHMARK(BM_Fib)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(40)
-    ->Setup(initChildSchedulerLF)
-    ->Name("ChildSchedulerLF Fib");
 
 BENCHMARK(BM_NQueens)
     ->Unit(benchmark::kMillisecond)
@@ -215,53 +211,38 @@ BENCHMARK(BM_NQueens)
     ->Arg(14)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler N-Queens");
-BENCHMARK(BM_NQueens)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(14)
-    ->Setup(initChildSchedulerLF)
-    ->Name("ChildScheduleLF N-Queens");
 
-BENCHMARK(BM_Rectmul)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(64)
-    ->Setup(initNoSpawnScheduler)
-    ->Name("NoSpawnScheduler Rectmul");
-BENCHMARK(BM_Rectmul)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(64)
-    ->Setup(initSimpleScheduler)
-    ->Name("SimpleScheduler Rectmul");
-BENCHMARK(BM_Rectmul)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(64)
-    ->Setup(initChildScheduler)
-    ->Name("ChildScheduler Rectmul");
-BENCHMARK(BM_Rectmul)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(64)
-    ->Setup(initChildSchedulerLF)
-    ->Name("ChildSchedulerLF Rectmul");
+// BENCHMARK(BM_Rectmul)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(64)
+//     ->Setup(initNoSpawnScheduler)
+//     ->Name("NoSpawnScheduler Rectmul");
+// BENCHMARK(BM_Rectmul)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(64)
+//     ->Setup(initSimpleScheduler)
+//     ->Name("SimpleScheduler Rectmul");
+// BENCHMARK(BM_Rectmul)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(64)
+//     ->Setup(initChildScheduler)
+//     ->Name("ChildScheduler Rectmul");
 
-BENCHMARK(BM_NBody)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(10000)
-    ->Setup(initNoSpawnScheduler)
-    ->Name("NoSpawnScheduler Nbody");
+// BENCHMARK(BM_NBody)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(10000)
+//     ->Setup(initNoSpawnScheduler)
+//     ->Name("NoSpawnScheduler Nbody");
 
-BENCHMARK(BM_NBody)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(10000)
-    ->Setup(initSimpleScheduler)
-    ->Name("SimpleScheduler Nbody");
-BENCHMARK(BM_NBody)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(10000)
-    ->Setup(initChildScheduler)
-    ->Name("ChildScheduler Nbody");
-BENCHMARK(BM_NBody)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(10000)
-    ->Setup(initChildScheduler)
-    ->Name("ChildSchedulerLF Nbody");
+// BENCHMARK(BM_NBody)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(10000)
+//     ->Setup(initSimpleScheduler)
+//     ->Name("SimpleScheduler Nbody");
+// BENCHMARK(BM_NBody)
+//     ->Unit(benchmark::kMillisecond)
+//     ->Arg(10000)
+//     ->Setup(initChildScheduler)
+//     ->Name("ChildScheduler Nbody");
 
 BENCHMARK_MAIN();

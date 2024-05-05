@@ -236,11 +236,6 @@ BENCHMARK(BM_Rectmul)
     ->Arg(64)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler Rectmul");
-BENCHMARK(BM_Rectmul)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(64)
-    ->Setup(initChildSchedulerLF)
-    ->Name("ChildSchedulerLF Rectmul");
 
 BENCHMARK(BM_NBody)
     ->Unit(benchmark::kMillisecond)
@@ -258,10 +253,5 @@ BENCHMARK(BM_NBody)
     ->Arg(10000)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler Nbody");
-BENCHMARK(BM_NBody)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(10000)
-    ->Setup(initChildScheduler)
-    ->Name("ChildSchedulerLF Nbody");
 
 BENCHMARK_MAIN();

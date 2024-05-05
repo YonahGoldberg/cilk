@@ -258,10 +258,5 @@ BENCHMARK(BM_NBody)
     ->Arg(10000)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler Nbody");
-BENCHMARK(BM_NBody)
-    ->Unit(benchmark::kMillisecond)
-    ->Arg(10000)
-    ->Setup(initChildScheduler)
-    ->Name("ChildSchedulerLF Nbody");
 
 BENCHMARK_MAIN();

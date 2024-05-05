@@ -9,74 +9,72 @@
 template <typename T> class TaskQueue {
 public:
   TaskQueue() {
-    bottomIndex = 0;
-    topIndex = 0;
-    queue.resize(1000000);
+    backIndex = 0; // nothing in queue so initialze to 0
+    frontIndex = 0; // nothing in queue so initialze to 0
+    queue.resize(100000);
   }
 
   TaskQueue(const TaskQueue&) = delete; // Disable copy constructor
   TaskQueue(TaskQueue&& other) noexcept
-      : bottomIndex(other.bottomIndex.load(std::memory_order_relaxed)),
-        topIndex(other.topIndex.load(std::memory_order_relaxed)),
+      : backIndex(other.backIndex.load(std::memory_order_relaxed)),
+        frontIndex(other.frontIndex.load(std::memory_order_relaxed)),
         queue(std::move(other.queue)) {} // Allow move constructor
   TaskQueue& operator=(const TaskQueue&) = delete; // Disable copy assignment
   TaskQueue& operator=(TaskQueue&&) = delete; // Disable move assignment
 
-  void push(Task<T> job) {
-    int bottom = bottomIndex.load(std::memory_order_seq_cst);
-    queue[bottom] = std::move(job);
-    bottomIndex.store(bottom + 1, std::memory_order_seq_cst);
-  }
-
+  // This thread tries to pop from back of the queue and adds to back of the queue allowing for LF
   std::optional<Task<T>> pop() {
-    int bottom = bottomIndex.load(std::memory_order_seq_cst);
-    if (bottom == 0) return std::nullopt;
-    int top = topIndex.load(std::memory_order_seq_cst);
-    bottom = std::max(0, bottom - 1);
-    bottomIndex.store(bottom, std::memory_order_seq_cst);
-    if (top <= bottom) {
-      Task<T>* job = &queue[bottom];
-      if (top != bottom) {
-        return std::move(*job);
-      }
-      if (topIndex.compare_exchange_strong(top, top + 1,
+    int back = backIndex.load(std::memory_order_seq_cst);
+    if (back == 0) return std::nullopt;
+    int front = frontIndex.load(std::memory_order_seq_cst);
+    back = std::max(0, back - 1); // Error where it goes negative
+    backIndex.store(back, std::memory_order_seq_cst); // reupdate it
+    if (front <= back) {
+      Task<T>* task = &queue[back];
+      if (front != back) {
+        return std::move(*task);
+      } 
+      // Try and update it, if not, report nullopt as it failed
+      if (frontIndex.compare_exchange_strong(front, front + 1,
                                            std::memory_order_seq_cst)) {
-        bottomIndex.store(top + 1, std::memory_order_release);
-        return std::move(*job);
+        backIndex.store(front + 1, std::memory_order_release);
+        return std::move(*task);
       }
-      bottomIndex.store(top + 1, std::memory_order_release);
+      backIndex.store(front + 1, std::memory_order_release);
       return std::nullopt;
     } else {
-      bottomIndex.store(top, std::memory_order_seq_cst);
+      backIndex.store(front, std::memory_order_seq_cst);
       return std::nullopt;
     }
   }
+  // This thread adds to back of queue to reduce contention and they steal from front
+  void push(Task<T> task) {
+    int back = backIndex.load(std::memory_order_seq_cst);
+    queue[back] = std::move(task);
+    backIndex.store(back + 1, std::memory_order_seq_cst);
+  }
 
+  // Steal from front of queue and try and steal it by using cmp_exchange
   std::optional<Task<T>> steal() {
-    int top = topIndex.load(std::memory_order_seq_cst);
-    int bottom = bottomIndex.load(std::memory_order_seq_cst);
-    if (top < bottom) {
-      Task<T>* job = &queue[top];
-      if (topIndex.compare_exchange_strong(top, top + 1,
+    int front = frontIndex.load(std::memory_order_seq_cst);
+    int back = backIndex.load(std::memory_order_seq_cst);
+    if (front < back) {
+      Task<T>* task = &queue[front];
+      if (frontIndex.compare_exchange_strong(front, front + 1,
                                            std::memory_order_seq_cst)) {
-        return std::move(*job);
+        return std::move(*task);
       }
+      // Did not successfully update the front index
       return std::nullopt;
     } else {
       return std::nullopt;
     }
   }
 
-  size_t size() const { return static_cast<size_t>(bottomIndex - topIndex); }
-
-  void clear() {
-    bottomIndex = 0;
-    topIndex = 0;
-  }
 
 private:
-  int maxJobs;
-  std::atomic_int bottomIndex;
-  std::atomic_int topIndex;
-  std::vector<Task<T>> queue;
+  std::vector<Task<T>> queue; // the actual queue storing everything
+  std::atomic_int backIndex; // Pointer for back index of the queue
+  std::atomic_int frontIndex; // Pointer for the front index of the queue
+  
 };

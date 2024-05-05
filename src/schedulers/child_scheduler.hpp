@@ -20,6 +20,7 @@
 #include <deque>
 #include <thread>
 #include <vector>
+#include <random>
 
 #include "scheduler.hpp"
 
@@ -108,6 +109,7 @@ public:
   // Attempt to steal work while waiting on fut to finish
   T sync(std::future<T> fut) {
     int tid = getTid();
+    int curTid = tid;
 
     // While future is not valid, attempt to steal work
     while (fut.wait_for(std::chrono::milliseconds(0)) !=
@@ -115,22 +117,30 @@ public:
       Task task;
       bool foundTask = false;
       {
+        {
         std::unique_lock<std::mutex> lock(locks[tid]);
-        if (!taskQueues[tid].empty()) {
+        if(taskQueues[tid].empty()){
+          curTid = GetRandomTaskQueue();
+        }
+      }
+        std::unique_lock<std::mutex> lock(locks[curTid]);
+        if (!taskQueues[curTid].empty()) {
           foundTask = true;
-          task = std::move(taskQueues[tid].front());
-          taskQueues[tid].pop_front();
+          task = std::move(taskQueues[curTid].front());
+          taskQueues[curTid].pop_front();
         }
       }
 
       if (foundTask) {
         taskCount.fetch_sub(1, std::memory_order_relaxed);
       } else {
+        curTid = tid;
         continue;
       }
 
       // There is a task to run. Execute it!
       task.func();
+      curTid = tid;
     }
 
     // Return result of future if there is one
@@ -141,10 +151,21 @@ public:
     }
   }
 
+  
+
 private:
   // Get the callling threads integer thread ID
   int getTid() { return threadIds[std::this_thread::get_id()]; }
 
+  size_t GetRandomTaskQueue()
+  {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_int_distribution<> distribution(0, n - 1);
+    size_t index = static_cast<size_t> ( std::round( distribution( gen ) ) );
+    return index;
+  }
+  
   void workerThread(int tid) {
     int curTid = tid;
 
@@ -154,6 +175,13 @@ private:
     while (true) {
       Task task;
       bool foundTask = false;
+      {
+        std::unique_lock<std::mutex> lock(locks[tid]);
+        if(taskQueues[tid].empty()){
+          curTid = GetRandomTaskQueue();
+        }
+      }
+      
       {
         std::unique_lock<std::mutex> lock(locks[curTid]);
         if (!taskQueues[curTid].empty()) {
@@ -180,11 +208,13 @@ private:
         }
 
         // Keep this thread running and check next queue
-        curTid = (curTid + 1) % n;
+        // curTid = GetRandomTaskQueue();
+        curTid = tid;
         continue;
       }
 
       // There is a task to run. Execute it!
+      curTid = tid;
       task.func();
       workCount.fetch_sub(1, std::memory_order_relaxed);
     }

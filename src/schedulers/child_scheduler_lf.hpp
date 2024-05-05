@@ -162,7 +162,7 @@ public:
   // Attempt to steal work while waiting on fut to finish
   T sync(std::future<T> fut) {
     int tid = getTid();
-
+    
     // While future is not valid, attempt to steal work
     while (fut.wait_for(std::chrono::milliseconds(0)) !=
            std::future_status::ready) {

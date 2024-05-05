@@ -23,9 +23,11 @@
 #include "tests/quicksort.hpp"
 #include "tests/rectmul.hpp"
 #include "tests/nbody.hpp"
+#include "tests/heat.hpp"
+#include "tests/pfor.hpp"
 
 // Number of threads to spawn when running a test program
-const int NUM_THREADS = 12;
+const int NUM_THREADS = 8;
 
 // Utility function for quicksort to ensure an array is sorted
 bool isSorted(const std::vector<int>& vec) {
@@ -117,7 +119,14 @@ static void BM_NQueens(benchmark::State &state) {
 static void BM_Rectmul(benchmark::State &state) {
   int x = state.range(0);
   for (auto _ : state) {
-    scheduler->run([x] {return rectmul(x,x,x);}, NUM_THREADS);
+    scheduler->run([x] { return rectmul(x,x,x); }, NUM_THREADS);
+  }
+}
+
+static void BM_PFor(benchmark::State &state) {
+  int x = state.range(0);
+  for (auto _ : state) {
+    scheduler->run([x] { return pfor(x); }, NUM_THREADS);
   }
 }
 
@@ -151,7 +160,44 @@ static void BM_NBody(benchmark::State &state) {
           simulateNBody(particles);
           return 0; 
       }, NUM_THREADS);
+      state.PauseTiming();
       particles = copy;
+      state.ResumeTiming();
+  }
+}
+
+static void BM_Heat(benchmark::State &state) {
+  int n = state.range(0);
+  std::vector<Particle> particles;
+
+  // Generate random input for the simulation
+  // int nx = 4096;
+  // int ny = 1024;
+  // int nt = 100;
+  // double xu = 0.0;
+  // double xo = 1.570796326794896558;
+  // double yu = 0.0;
+  // double yo = 1.570796326794896558;
+  // double tu = 0.0;
+  // double to = 0.0000001;
+  // int leafmaxcol = 1;
+  int nx = 16384;
+  int ny = 4096;
+  int nt = 400;
+  double xu = 0.0;
+  double xo = 1.570796326794896558;
+  double yu = 0.0;
+  double yo = 1.570796326794896558;
+  double tu = 0.0;
+  double to = 0.0000001;
+  int leafmaxcol = 1;
+
+  // Run the simulation for benchmarking
+  for (auto _ : state) {
+    // Run the n-body simulation
+    scheduler->run([=] {
+      return heat(nx, ny, nt, xu, xo, yu, yo, tu, to, leafmaxcol);
+    }, NUM_THREADS);
   }
 }
 
@@ -159,109 +205,166 @@ static void BM_NBody(benchmark::State &state) {
 
 BENCHMARK(BM_Quicksort)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(1000000)
+    ->Arg(5000000)
+    ->Iterations(10)
     ->Setup(initNoSpawnScheduler)
     ->Name("NoSpawnScheduler Quicksort");
 BENCHMARK(BM_Quicksort)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(1000000)
+    ->Arg(5000000)
+    ->Iterations(10)
     ->Setup(initSimpleScheduler)
     ->Name("SimpleScheduler Quicksort");
 BENCHMARK(BM_Quicksort)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(1000000)
+    ->Arg(5000000)
+    ->Iterations(10)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler Quicksort");
 BENCHMARK(BM_Quicksort)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(1000000)
+    ->Arg(5000000)
+    ->Iterations(10)
     ->Setup(initChildSchedulerLF)
     ->Name("ChildSchedulerLF Quicksort");
 
 // Configuration to benchmark fib on all schedulers
 BENCHMARK(BM_Fib)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(40)
+    ->Arg(45)
+    ->Iterations(5)
     ->Setup(initNoSpawnScheduler)
     ->Name("NoSpawnScheduler Fib");
 BENCHMARK(BM_Fib)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(40)
+    ->Arg(45)
+    ->Iterations(5)
     ->Setup(initSimpleScheduler)
     ->Name("SimpleScheduler Fib");
 BENCHMARK(BM_Fib)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(40)
+    ->Arg(45)
+    ->Iterations(5)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler Fib");
 BENCHMARK(BM_Fib)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(40)
+    ->Arg(45)
+    ->Iterations(5)
     ->Setup(initChildSchedulerLF)
     ->Name("ChildSchedulerLF Fib");
 
 BENCHMARK(BM_NQueens)
     ->Unit(benchmark::kMillisecond)
     ->Arg(14)
+    ->Iterations(1)
     ->Setup(initNoSpawnScheduler)
     ->Name("NoSpawnScheduler N-Queens");
 BENCHMARK(BM_NQueens)
     ->Unit(benchmark::kMillisecond)
     ->Arg(14)
+    ->Iterations(1)
     ->Setup(initSimpleScheduler)
     ->Name("SimpleScheduler N-Queens");
 BENCHMARK(BM_NQueens)
     ->Unit(benchmark::kMillisecond)
     ->Arg(14)
+    ->Iterations(1)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler N-Queens");
 BENCHMARK(BM_NQueens)
     ->Unit(benchmark::kMillisecond)
     ->Arg(14)
+    ->Iterations(1)
     ->Setup(initChildSchedulerLF)
-    ->Name("ChildScheduleLF N-Queens");
+    ->Name("ChildSchedulerLF N-Queens");
 
 BENCHMARK(BM_Rectmul)
     ->Unit(benchmark::kMillisecond)
     ->Arg(64)
+    ->Iterations(1)
     ->Setup(initNoSpawnScheduler)
     ->Name("NoSpawnScheduler Rectmul");
 BENCHMARK(BM_Rectmul)
     ->Unit(benchmark::kMillisecond)
     ->Arg(64)
+    ->Iterations(1)
     ->Setup(initSimpleScheduler)
     ->Name("SimpleScheduler Rectmul");
 BENCHMARK(BM_Rectmul)
     ->Unit(benchmark::kMillisecond)
     ->Arg(64)
+    ->Iterations(1)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler Rectmul");
 BENCHMARK(BM_Rectmul)
     ->Unit(benchmark::kMillisecond)
     ->Arg(64)
+    ->Iterations(1)
     ->Setup(initChildSchedulerLF)
     ->Name("ChildSchedulerLF Rectmul");
 
 BENCHMARK(BM_NBody)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(10000)
+    ->Arg(100000)
     ->Setup(initNoSpawnScheduler)
     ->Name("NoSpawnScheduler Nbody");
-
 BENCHMARK(BM_NBody)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(10000)
+    ->Arg(100000)
     ->Setup(initSimpleScheduler)
     ->Name("SimpleScheduler Nbody");
 BENCHMARK(BM_NBody)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(10000)
+    ->Arg(100000)
     ->Setup(initChildScheduler)
     ->Name("ChildScheduler Nbody");
 BENCHMARK(BM_NBody)
     ->Unit(benchmark::kMillisecond)
-    ->Arg(10000)
+    ->Arg(100000)
     ->Setup(initChildScheduler)
     ->Name("ChildSchedulerLF Nbody");
+
+BENCHMARK(BM_Heat)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(1)
+    ->Setup(initNoSpawnScheduler)
+    ->Name("NoSpawnScheduler Heat");
+BENCHMARK(BM_Heat)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(1)
+    ->Setup(initSimpleScheduler)
+    ->Name("SimpleScheduler Heat");
+BENCHMARK(BM_Heat)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(1)
+    ->Setup(initChildScheduler)
+    ->Name("ChildScheduler Heat");
+BENCHMARK(BM_Heat)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(1)
+    ->Setup(initChildScheduler)
+    ->Name("ChildSchedulerLF Heat");
+
+BENCHMARK(BM_PFor)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(100)
+    ->Setup(initNoSpawnScheduler)
+    ->Name("NoSpawnScheduler PFor");
+BENCHMARK(BM_PFor)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(100)
+    ->Setup(initSimpleScheduler)
+    ->Name("SimpleScheduler PFor");
+BENCHMARK(BM_PFor)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(100)
+    ->Setup(initChildScheduler)
+    ->Name("ChildScheduler PFor");
+BENCHMARK(BM_PFor)
+    ->Unit(benchmark::kMillisecond)
+    ->Arg(100)
+    ->Setup(initChildScheduler)
+    ->Name("ChildSchedulerLF PFor");
 
 BENCHMARK_MAIN();

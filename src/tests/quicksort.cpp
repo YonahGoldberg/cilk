@@ -9,15 +9,15 @@ int seqQuicksort(int *begin, int *end) {
         std::partition(begin, end, [pivot](int x) { return x < pivot; });
     std::swap(*end, *middle);
 
-    quicksort(begin, middle);
-    quicksort(++middle, ++end);
+    seqQuicksort(begin, middle);
+    seqQuicksort(++middle, ++end);
   }
 
   return 0;
 }
 
 int quicksort(int *begin, int *end) {
-  if (end - begin <= 1000) {
+  if (end - begin <= 5000) {
     seqQuicksort(begin, end);
     return 0;
   }

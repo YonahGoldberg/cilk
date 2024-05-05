@@ -50,7 +50,7 @@ int main() {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dist(1, 1000); // Adjust range as needed
 
-    std::vector<int> arr(1000000);
+    std::vector<int> arr(5000000);
     for (auto& elem : arr) {
         elem = dist(gen); // Fill the array with random integers
     }

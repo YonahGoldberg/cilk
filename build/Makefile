@@ -48,19 +48,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/homebrew/Cellar/cmake/3.29.1/bin/cmake
+CMAKE_COMMAND = /opt/homebrew/Cellar/cmake/3.29.0/bin/cmake
 
 # The command to remove a file.
-RM = /opt/homebrew/Cellar/cmake/3.29.1/bin/cmake -E rm -f
+RM = /opt/homebrew/Cellar/cmake/3.29.0/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/jellinge/Desktop/cilk
+CMAKE_SOURCE_DIR = /Users/yonah/Repos/cilk
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/jellinge/Desktop/cilk/build
+CMAKE_BINARY_DIR = /Users/yonah/Repos/cilk/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -68,7 +68,7 @@ CMAKE_BINARY_DIR = /Users/jellinge/Desktop/cilk/build
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
-	/opt/homebrew/Cellar/cmake/3.29.1/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/opt/homebrew/Cellar/cmake/3.29.0/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -78,7 +78,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake to regenerate build system..."
-	/opt/homebrew/Cellar/cmake/3.29.1/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/opt/homebrew/Cellar/cmake/3.29.0/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/jellinge/Desktop/cilk/build/CMakeFiles /Users/jellinge/Desktop/cilk/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/yonah/Repos/cilk/build/CMakeFiles /Users/yonah/Repos/cilk/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/jellinge/Desktop/cilk/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/yonah/Repos/cilk/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -201,6 +201,30 @@ src/tests/fib.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/fib.cpp.s
 .PHONY : src/tests/fib.cpp.s
 
+src/tests/heat.o: src/tests/heat.cpp.o
+.PHONY : src/tests/heat.o
+
+# target to build an object file
+src/tests/heat.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/heat.cpp.o
+.PHONY : src/tests/heat.cpp.o
+
+src/tests/heat.i: src/tests/heat.cpp.i
+.PHONY : src/tests/heat.i
+
+# target to preprocess a source file
+src/tests/heat.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/heat.cpp.i
+.PHONY : src/tests/heat.cpp.i
+
+src/tests/heat.s: src/tests/heat.cpp.s
+.PHONY : src/tests/heat.s
+
+# target to generate assembly for a file
+src/tests/heat.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/heat.cpp.s
+.PHONY : src/tests/heat.cpp.s
+
 src/tests/nbody.o: src/tests/nbody.cpp.o
 .PHONY : src/tests/nbody.o
 
@@ -248,6 +272,30 @@ src/tests/nqueens.s: src/tests/nqueens.cpp.s
 src/tests/nqueens.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/nqueens.cpp.s
 .PHONY : src/tests/nqueens.cpp.s
+
+src/tests/pfor.o: src/tests/pfor.cpp.o
+.PHONY : src/tests/pfor.o
+
+# target to build an object file
+src/tests/pfor.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/pfor.cpp.o
+.PHONY : src/tests/pfor.cpp.o
+
+src/tests/pfor.i: src/tests/pfor.cpp.i
+.PHONY : src/tests/pfor.i
+
+# target to preprocess a source file
+src/tests/pfor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/pfor.cpp.i
+.PHONY : src/tests/pfor.cpp.i
+
+src/tests/pfor.s: src/tests/pfor.cpp.s
+.PHONY : src/tests/pfor.s
+
+# target to generate assembly for a file
+src/tests/pfor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cilk.dir/build.make CMakeFiles/cilk.dir/src/tests/pfor.cpp.s
+.PHONY : src/tests/pfor.cpp.s
 
 src/tests/quicksort.o: src/tests/quicksort.cpp.o
 .PHONY : src/tests/quicksort.o
@@ -315,12 +363,18 @@ help:
 	@echo "... src/tests/fib.o"
 	@echo "... src/tests/fib.i"
 	@echo "... src/tests/fib.s"
+	@echo "... src/tests/heat.o"
+	@echo "... src/tests/heat.i"
+	@echo "... src/tests/heat.s"
 	@echo "... src/tests/nbody.o"
 	@echo "... src/tests/nbody.i"
 	@echo "... src/tests/nbody.s"
 	@echo "... src/tests/nqueens.o"
 	@echo "... src/tests/nqueens.i"
 	@echo "... src/tests/nqueens.s"
+	@echo "... src/tests/pfor.o"
+	@echo "... src/tests/pfor.i"
+	@echo "... src/tests/pfor.s"
 	@echo "... src/tests/quicksort.o"
 	@echo "... src/tests/quicksort.i"
 	@echo "... src/tests/quicksort.s"

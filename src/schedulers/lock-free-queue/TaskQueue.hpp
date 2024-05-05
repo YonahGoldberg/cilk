@@ -11,7 +11,7 @@ public:
   TaskQueue() {
     bottomIndex = 0;
     topIndex = 0;
-    queue.resize(100000);
+    queue.resize(1000000);
   }
 
   TaskQueue(const TaskQueue&) = delete; // Disable copy constructor

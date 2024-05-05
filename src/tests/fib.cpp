@@ -5,7 +5,7 @@ int fibSeq(int n) {
   if (n < 2) {
     return n;
   } else {
-    return fib(n - 1) + fib(n - 2);
+    return fibSeq(n - 1) + fibSeq(n - 2);
   }  
 }
 

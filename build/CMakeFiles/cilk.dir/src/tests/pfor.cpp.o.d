@@ -1,6 +1,6 @@
-CMakeFiles/cilk.dir/src/tests/quicksort.cpp.o: \
-  /Users/yonah/Repos/cilk/src/tests/quicksort.cpp \
-  /Users/yonah/Repos/cilk/src/tests/quicksort.hpp \
+CMakeFiles/cilk.dir/src/tests/pfor.cpp.o: \
+  /Users/yonah/Repos/cilk/src/tests/pfor.cpp \
+  /Users/yonah/Repos/cilk/src/tests/pfor.hpp \
   /Users/yonah/Repos/cilk/src/tests/../scheduler_instance.hpp \
   /Users/yonah/Repos/cilk/src/tests/../schedulers/child_scheduler.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/functional \

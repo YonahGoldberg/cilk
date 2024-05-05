@@ -46,21 +46,22 @@ public:
 
     // Spawn a thread to run the function in parallel
     if (runParallel) {
-      std::thread t([prom = std::move(prom), func = std::move(func), this]() mutable {
-        // Check at compile time if we need to set the return result
-        if constexpr (std::is_void<T>::value) {
-          func();
-          prom.set_value();
-        } else {
-          const T result = func();
-          prom.set_value(std::move(result));
-        }
+      std::thread t(
+          [prom = std::move(prom), func = std::move(func), this]() mutable {
+            // Check at compile time if we need to set the return result
+            if constexpr (std::is_void<T>::value) {
+              func();
+              prom.set_value();
+            } else {
+              const T result = func();
+              prom.set_value(std::move(result));
+            }
 
-        {
-          std::unique_lock<std::mutex> lock(this->mut);
-          this->threadsAvail++;
-        }
-      });
+            {
+              std::unique_lock<std::mutex> lock(this->mut);
+              this->threadsAvail++;
+            }
+          });
 
       t.detach();
       return std::move(fut);

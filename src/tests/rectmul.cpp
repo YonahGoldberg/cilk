@@ -1,6 +1,6 @@
-/* 
+/*
  * Program to multiply two rectangualar matrizes A(n,m) * B(m,n), where
- * (n < m) and (n mod 16 = 0) and (m mod n = 0). (Otherwise fill with 0s 
+ * (n < m) and (n mod 16 = 0) and (m mod n = 0). (Otherwise fill with 0s
  * to fit the shape.)
  *
  * written by Harald Prokop (prokop@mit.edu) Fall 97.
@@ -26,18 +26,18 @@
  *
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include "../scheduler_instance.hpp" 
 #include "rectmul.hpp"
+#include "../scheduler_instance.hpp"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
 
-unsigned long long todval (struct timeval *tp) {
-    return tp->tv_sec * 1000 * 1000 + tp->tv_usec;
+unsigned long long todval(struct timeval *tp) {
+  return tp->tv_sec * 1000 * 1000 + tp->tv_usec;
 }
 
 #define BLOCK_EDGE 16
-#define BLOCK_SIZE (BLOCK_EDGE*BLOCK_EDGE)
+#define BLOCK_SIZE (BLOCK_EDGE * BLOCK_EDGE)
 
 typedef double DTYPE;
 
@@ -47,19 +47,18 @@ typedef block *pblock;
 // apparently register storage specifier is deprecated
 #define register
 
-
-/* compute R = R+AB, where R,A,B are BLOCK_EDGE x BLOCK_EDGE matricies 
+/* compute R = R+AB, where R,A,B are BLOCK_EDGE x BLOCK_EDGE matricies
  */
 long long mult_add_block(block *A, block *B, block *R) {
 
   int i, j;
   long long flops = 0LL;
 
-  for (j = 0; j < 16; j += 2) {	/* 2 columns at a time */
-    DTYPE *bp = &((DTYPE *) B)[j];
-    for (i = 0; i < 16; i += 2) {		/* 2 rows at a time */
-      DTYPE *ap = &((DTYPE *) A)[i * 16];
-      DTYPE *rp = &((DTYPE *) R)[j + i * 16];
+  for (j = 0; j < 16; j += 2) { /* 2 columns at a time */
+    DTYPE *bp = &((DTYPE *)B)[j];
+    for (i = 0; i < 16; i += 2) { /* 2 rows at a time */
+      DTYPE *ap = &((DTYPE *)A)[i * 16];
+      DTYPE *rp = &((DTYPE *)R)[j + i * 16];
       register DTYPE s0_0, s0_1;
       register DTYPE s1_0, s1_1;
       s0_0 = rp[0];
@@ -141,19 +140,18 @@ long long mult_add_block(block *A, block *B, block *R) {
   return flops;
 }
 
-
-/* compute R = AB, where R,A,B are BLOCK_EDGE x BLOCK_EDGE matricies 
+/* compute R = AB, where R,A,B are BLOCK_EDGE x BLOCK_EDGE matricies
  */
 long long multiply_block(block *A, block *B, block *R) {
 
   int i, j;
   long long flops = 0LL;
 
-  for (j = 0; j < 16; j += 2) {	/* 2 columns at a time */
-    DTYPE *bp = &((DTYPE *) B)[j];
-    for (i = 0; i < 16; i += 2) {		/* 2 rows at a time */
-      DTYPE *ap = &((DTYPE *) A)[i * 16];
-      DTYPE *rp = &((DTYPE *) R)[j + i * 16];
+  for (j = 0; j < 16; j += 2) { /* 2 columns at a time */
+    DTYPE *bp = &((DTYPE *)B)[j];
+    for (i = 0; i < 16; i += 2) { /* 2 rows at a time */
+      DTYPE *ap = &((DTYPE *)A)[i * 16];
+      DTYPE *rp = &((DTYPE *)R)[j + i * 16];
       register DTYPE s0_0, s0_1;
       register DTYPE s1_0, s1_1;
       s0_0 = ap[0] * bp[0];
@@ -231,115 +229,117 @@ long long multiply_block(block *A, block *B, block *R) {
   return flops;
 }
 
-
-/* Checks if each A[i,j] of a martix A of size nb x nb blocks has value v 
+/* Checks if each A[i,j] of a martix A of size nb x nb blocks has value v
  */
-int check_block (block *R, DTYPE v) {
+int check_block(block *R, DTYPE v) {
 
   int i;
   int error = 0;
 
   // fprintf(stderr, "R: %lx.\n", R);
-  for (i = 0; i < BLOCK_SIZE; i++) 
-    if (((DTYPE *) R)[i] != v) {
-      if( i == 0 ) 
+  for (i = 0; i < BLOCK_SIZE; i++)
+    if (((DTYPE *)R)[i] != v) {
+      if (i == 0)
         fprintf(stderr, "R[%d]: %lf != %lf.\n", i, ((DTYPE *)R)[i], v);
-      //return 1;
+      // return 1;
       error++;
     }
 
   return error;
 }
 
-int compare_block (block *R, block *B) {
+int compare_block(block *R, block *B) {
 
   int i;
   int error = 0;
 
   // fprintf(stderr, "R: %lx.\n", R);
-  for (i = 0; i < BLOCK_SIZE; i++) 
-    if (((DTYPE *) R)[i] != ((DTYPE *) B)[i] ) {
-      if( i == 0 ) 
-        fprintf(stderr, "(R[%d]) %lf != %lf (B[%d]).\n", 
-            i, ((DTYPE *)R)[i], ((DTYPE *)B)[i], i);
-      //return 1;
+  for (i = 0; i < BLOCK_SIZE; i++)
+    if (((DTYPE *)R)[i] != ((DTYPE *)B)[i]) {
+      if (i == 0)
+        fprintf(stderr, "(R[%d]) %lf != %lf (B[%d]).\n", i, ((DTYPE *)R)[i],
+                ((DTYPE *)B)[i], i);
+      // return 1;
       error++;
     }
 
   return error;
 }
-
 
 long long add_block(block *T, block *R) {
 
   long i;
 
   for (i = 0; i < BLOCK_SIZE; i += 4) {
-    ((DTYPE *) R)[i] += ((DTYPE *) T)[i];
-    ((DTYPE *) R)[i + 1] += ((DTYPE *) T)[i + 1];
-    ((DTYPE *) R)[i + 2] += ((DTYPE *) T)[i + 2];
-    ((DTYPE *) R)[i + 3] += ((DTYPE *) T)[i + 3];
+    ((DTYPE *)R)[i] += ((DTYPE *)T)[i];
+    ((DTYPE *)R)[i + 1] += ((DTYPE *)T)[i + 1];
+    ((DTYPE *)R)[i + 2] += ((DTYPE *)T)[i + 2];
+    ((DTYPE *)R)[i + 3] += ((DTYPE *)T)[i + 3];
   }
 
   return BLOCK_SIZE;
 }
 
-/* 
- * Add matrix T into matrix R, where T and R are bl blocks in size 
+/*
+ * Add matrix T into matrix R, where T and R are bl blocks in size
  */
-static long long add_matrix(block *T, long ot, block *R, long orr, long x, long y) {
+static long long add_matrix(block *T, long ot, block *R, long orr, long x,
+                            long y) {
 
   long long flops = 0LL;
 
-  if ((x+y)==2) {
-    flops = add_block(T,R);
+  if ((x + y) == 2) {
+    flops = add_block(T, R);
     return flops;
-  } 
+  }
 
   long long _tmp1 = 0LL, _tmp2 = 0LL;
 
   if (x > y) {
-    auto future1 = scheduler->spawn([=]() -> long long { return add_matrix(T, ot, R, orr, x / 2, y); });
-    long long _tmp2 = add_matrix(T + (x / 2) * ot, ot, R + (x / 2) * orr, orr, (x + 1) / 2, y);
+    auto future1 = scheduler->spawn(
+        [=]() -> long long { return add_matrix(T, ot, R, orr, x / 2, y); });
+    long long _tmp2 = add_matrix(T + (x / 2) * ot, ot, R + (x / 2) * orr, orr,
+                                 (x + 1) / 2, y);
     long long _tmp1 = scheduler->sync(std::move(future1));
     flops = _tmp1 + _tmp2;
   } else {
-    auto future1 = scheduler->spawn([=]() -> long long { return add_matrix(T, ot, R, orr, x, y / 2); });
-    long long _tmp2 = add_matrix(T + (y / 2), ot, R + (y / 2), orr, x, (y + 1) / 2);
+    auto future1 = scheduler->spawn(
+        [=]() -> long long { return add_matrix(T, ot, R, orr, x, y / 2); });
+    long long _tmp2 =
+        add_matrix(T + (y / 2), ot, R + (y / 2), orr, x, (y + 1) / 2);
     long long _tmp1 = scheduler->sync(std::move(future1));
     flops = _tmp1 + _tmp2;
   }
-
 
   flops = _tmp1 + _tmp2;
   return flops;
 }
 
-void init_block(block* R, DTYPE v) {
+void init_block(block *R, DTYPE v) {
 
   int i;
 
   for (i = 0; i < BLOCK_SIZE; i++)
-    ((DTYPE *) R)[i] = v;
+    ((DTYPE *)R)[i] = v;
 }
 
 int init_matrix(block *R, long x, long y, long o, DTYPE v) {
 
-  if ((x+y)==2) {
-    init_block(R,v);
+  if ((x + y) == 2) {
+    init_block(R, v);
     return 0;
-  } 
+  }
 
   if (x > y) {
     auto future1 = scheduler->spawn([=]() -> int {
-      init_matrix(R, x / 2, y, o, v); 
+      init_matrix(R, x / 2, y, o, v);
       return 0;
     });
     init_matrix(R + (x / 2) * o, (x + 1) / 2, y, o, v);
     scheduler->sync(std::move(future1));
   } else {
     auto future1 = scheduler->spawn([=]() -> int {
-      init_matrix(R, x, y / 2, o, v); 
+      init_matrix(R, x, y / 2, o, v);
       return 0;
     });
     init_matrix(R + (y / 2), x, (y + 1) / 2, o, v);
@@ -349,10 +349,10 @@ int init_matrix(block *R, long x, long y, long o, DTYPE v) {
   return 0;
 }
 
-static long long multiply_matrix(block *A, long oa, block *B, long ob, long x, 
-                          long y, long z, block *R, long orr, int add) {
+static long long multiply_matrix(block *A, long oa, block *B, long ob, long x,
+                                 long y, long z, block *R, long orr, int add) {
 
-  if ((x+y+z) == 3) {
+  if ((x + y + z) == 3) {
     long long _tmp = 0LL;
     if (add)
       _tmp = mult_add_block(A, B, R);
@@ -360,46 +360,55 @@ static long long multiply_matrix(block *A, long oa, block *B, long ob, long x,
       _tmp = multiply_block(A, B, R);
 
     return _tmp;
-  } 
+  }
 
   long long flops = 0LL;
-  long long _tmp1=0LL, _tmp2=0LL;
+  long long _tmp1 = 0LL, _tmp2 = 0LL;
 
   if ((x >= y) && (x >= z)) {
-    auto future1 = scheduler->spawn([=]() -> long long { return multiply_matrix(A, oa, B, ob, x/2, y, z, R, orr, add); });
-    long long _tmp2 = multiply_matrix(A + (x/2) * oa, oa, B, ob, (x+1)/2, y, z, R + (x/2) * orr, orr, add);
+    auto future1 = scheduler->spawn([=]() -> long long {
+      return multiply_matrix(A, oa, B, ob, x / 2, y, z, R, orr, add);
+    });
+    long long _tmp2 = multiply_matrix(A + (x / 2) * oa, oa, B, ob, (x + 1) / 2,
+                                      y, z, R + (x / 2) * orr, orr, add);
     long long _tmp1 = scheduler->sync(std::move(future1));
     flops = _tmp1 + _tmp2;
   } else if ((y > x) && (y > z)) {
-    long long _tmp1 = multiply_matrix(A + (y/2) * oa, oa, B + (y/2) * ob, ob, x, (y+1)/2, z, R, orr, add);
-    long long _tmp2 = multiply_matrix(A, oa, B, ob, x, y/2, z, R, orr, add);
+    long long _tmp1 = multiply_matrix(A + (y / 2) * oa, oa, B + (y / 2) * ob,
+                                      ob, x, (y + 1) / 2, z, R, orr, add);
+    long long _tmp2 = multiply_matrix(A, oa, B, ob, x, y / 2, z, R, orr, add);
     flops = _tmp1 + _tmp2;
   } else {
-    auto future1 = scheduler->spawn([=]() -> long long { return multiply_matrix(A, oa, B, ob, x, y, z/2, R, orr, add); });
-    long long _tmp2 = multiply_matrix(A, oa, B + (z/2) * ob, ob, x, y, (z+1)/2, R + (z/2) * orr, orr, add);
+    auto future1 = scheduler->spawn([=]() -> long long {
+      return multiply_matrix(A, oa, B, ob, x, y, z / 2, R, orr, add);
+    });
+    long long _tmp2 = multiply_matrix(A, oa, B + (z / 2) * ob, ob, x, y,
+                                      (z + 1) / 2, R + (z / 2) * orr, orr, add);
     long long _tmp1 = scheduler->sync(std::move(future1));
     flops = _tmp1 + _tmp2;
   }
 
   return flops;
-} 
+}
 
 int rectmul(long x, long y, long z) {
 
   block *A, *B, *R;
   long long flops;
 
-  A = (block *) malloc(x*y * sizeof(block));
-  B = (block *) malloc(y*z * sizeof(block));
-  R = (block *) malloc(x*z * sizeof(block));
+  A = (block *)malloc(x * y * sizeof(block));
+  B = (block *)malloc(y * z * sizeof(block));
+  R = (block *)malloc(x * z * sizeof(block));
 
-  auto initA = scheduler->spawn([=]() -> int { return init_matrix(A, x, y, y, 1.0); });
-  auto initB = scheduler->spawn([=]() -> int { return init_matrix(B, y, z, z, 1.0); });
+  auto initA =
+      scheduler->spawn([=]() -> int { return init_matrix(A, x, y, y, 1.0); });
+  auto initB =
+      scheduler->spawn([=]() -> int { return init_matrix(B, y, z, z, 1.0); });
   init_matrix(R, x, z, z, 0.0);
   scheduler->sync(std::move(initA)); // Wait for task to complete
   scheduler->sync(std::move(initB)); // Wait for task to complete
 
-  flops = multiply_matrix(A,y,B,z,x,y,z,R,z,0);
+  flops = multiply_matrix(A, y, B, z, x, y, z, R, z, 0);
 
   free(A);
   free(B);

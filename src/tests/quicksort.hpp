@@ -1,1 +1,1 @@
-int quicksort(int* begin, int* end);
+int quicksort(int *begin, int *end);

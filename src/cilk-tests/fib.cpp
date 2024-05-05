@@ -1,15 +1,15 @@
-#include <cilk/cilk.h>
 #include <algorithm>
 #include <chrono>
+#include <cilk/cilk.h>
 #include <iostream>
 
 // Custom assert function. We want to fail if any of our programs we test
 // are not correct.
-void assertTrue(bool condition, const std::string& message) {
-    if (!condition) {
-        std::cerr << "Assertion failed: " << message << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
+void assertTrue(bool condition, const std::string &message) {
+  if (!condition) {
+    std::cerr << "Assertion failed: " << message << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
 }
 
 long fibSeq(long n) {
@@ -17,7 +17,7 @@ long fibSeq(long n) {
     return n;
   } else {
     return fibSeq(n - 1) + fibSeq(n - 2);
-  }  
+  }
 }
 
 long fib(long n) {
@@ -28,14 +28,15 @@ long fib(long n) {
     long fib2 = fib(n - 2);
     cilk_sync;
     return fib1 + fib2;
-  }  
+  }
 }
 
 int main() {
   auto start = std::chrono::steady_clock::now();
   long res = fib(45);
   auto end = std::chrono::steady_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+  auto duration =
+      std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
   std::cout << "Fib time: " << duration.count() << " ms" << std::endl;
 }

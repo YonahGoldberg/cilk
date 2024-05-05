@@ -9,9 +9,7 @@ template <typename T> class NoSpawnScheduler : public Scheduler<T> {
 public:
   NoSpawnScheduler(){};
 
-  T run(std::function<T()> func, int n) {
-    return func();
-  }
+  T run(std::function<T()> func, int n) { return func(); }
 
   std::future<T> spawn(std::function<T()> func) {
     std::promise<T> prom;
@@ -20,9 +18,7 @@ public:
     return fut;
   }
 
-  T sync(std::future<T> fut) { 
-    return fut.get();
-  }
+  T sync(std::future<T> fut) { return fut.get(); }
 };
 
 #endif

@@ -134,8 +134,8 @@ public:
     }
 
     // Join all worker threads to wait for them to finish
-    for (auto& thread : threads) {
-        thread.join();
+    for (auto &thread : threads) {
+      thread.join();
     }
     // std::cout << "joined all threads" << std::endl;
   }
@@ -178,7 +178,7 @@ public:
         longjmp(schedulerBuf, 1);
       }
     }
-    
+
     // follow through and return
   }
 

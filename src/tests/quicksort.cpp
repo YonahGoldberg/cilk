@@ -28,8 +28,8 @@ int quicksort(int *begin, int *end) {
       std::partition(begin, end, [pivot](int x) { return x < pivot; });
   std::swap(*end, *middle);
 
-  auto x = scheduler->spawn(
-      [begin, middle]() { return quicksort(begin, middle); });
+  auto x =
+      scheduler->spawn([begin, middle]() { return quicksort(begin, middle); });
   quicksort(++middle, ++end);
 
   scheduler->sync(std::move(x));

@@ -1,9 +1,9 @@
-#include <cilk/cilk.h>
 #include <algorithm>
 #include <chrono>
+#include <cilk/cilk.h>
 #include <iostream>
 
-int ok (int n, char *a) {
+int ok(int n, char *a) {
   int i, j;
   char p, q;
 
@@ -21,15 +21,15 @@ int ok (int n, char *a) {
 
 int nqueens(int n, int j, char *a) {
   if (n == j) {
-      return 1;
+    return 1;
   }
 
   int solNum = 0;
   std::vector<int> count(n);
 
   for (int i = 0; i < n; i++) {
-    char* b = (char *) alloca((j + 1) * sizeof (char));
-    memcpy(b, a, j * sizeof (char));
+    char *b = (char *)alloca((j + 1) * sizeof(char));
+    memcpy(b, a, j * sizeof(char));
     b[j] = i;
 
     if (ok(j + 1, b)) {
@@ -39,7 +39,7 @@ int nqueens(int n, int j, char *a) {
   }
   cilk_sync;
 
-  for(int i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     solNum += count[i];
   }
 
@@ -56,6 +56,7 @@ int main() {
   nqueens(n, 0, a);
   auto end = std::chrono::steady_clock::now();
 
-  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+  auto duration =
+      std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
   std::cout << "NQueens time: " << duration.count() << " ms" << std::endl;
 }

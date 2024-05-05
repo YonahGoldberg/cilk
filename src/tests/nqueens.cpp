@@ -32,19 +32,16 @@ int nqueens(int n, int j, char *a) {
 
         if (ok(j + 1, b)) {
             // Spawn a new task for exploring this partial solution
-            auto fut = scheduler->spawn([n, j, &b]() mutable {
+            auto fut = scheduler->spawn([n, j, b]() mutable {
                 return nqueens(n, j + 1, b);
             });
             futures.push_back(std::move(fut));
         }
     }
     
-
-    // Collect results from all futures
-    // printf("return1\n");
     for (auto &fut : futures) {
         solNum += scheduler->sync(std::move(fut));
     }
-    // printf("return2\n");
+
     return solNum;
 }

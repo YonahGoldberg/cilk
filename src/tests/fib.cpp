@@ -10,7 +10,7 @@ int fibSeq(int n) {
 }
 
 int fib(int n) {
-  if (n < 20) {
+  if (n < 35) {
     return fibSeq(n);
   } else {
     auto x = scheduler->spawn([n] { return fib(n - 1); });

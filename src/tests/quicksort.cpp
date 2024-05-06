@@ -17,7 +17,7 @@ int seqQuicksort(int *begin, int *end) {
 }
 
 int quicksort(int *begin, int *end) {
-  if (end - begin <= 5000) {
+  if (end - begin <= 50000) {
     seqQuicksort(begin, end);
     return 0;
   }

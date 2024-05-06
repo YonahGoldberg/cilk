@@ -1,3 +1,0 @@
-/Users/yonah/Repos/cilk/build/CMakeFiles/cilk.dir
-/Users/yonah/Repos/cilk/build/CMakeFiles/edit_cache.dir
-/Users/yonah/Repos/cilk/build/CMakeFiles/rebuild_cache.dir
